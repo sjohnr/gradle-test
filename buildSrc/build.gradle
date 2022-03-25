@@ -1,0 +1,39 @@
+plugins {
+    id "java-gradle-plugin"
+    id "java"
+}
+
+sourceCompatibility = JavaVersion.VERSION_11
+
+repositories {
+    gradlePluginPortal()
+    mavenCentral()
+    maven { url "https://repo.spring.io/plugins-release/" }
+}
+
+dependencies {
+    implementation "io.github.gradle-nexus:publish-plugin:1.1.0"
+    implementation "com.github.ben-manes:gradle-versions-plugin:0.38.0"
+    implementation "io.spring.javaformat:spring-javaformat-gradle-plugin:0.0.31"
+    implementation "io.spring.nohttp:nohttp-gradle:0.0.10"
+    implementation "org.jfrog.buildinfo:build-info-extractor-gradle:4.26.1"
+    implementation "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7.1"
+    implementation "org.springframework:spring-core:5.3.17"
+
+    testImplementation platform("org.junit:junit-bom:5.8.2")
+    testImplementation "org.junit.jupiter:junit-jupiter-api"
+    testImplementation "org.junit.jupiter:junit-jupiter-params"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine"
+    testImplementation "org.assertj:assertj-core:3.22.0"
+    testImplementation "org.mockito:mockito-core:3.12.4"
+    testImplementation "org.mockito:mockito-junit-jupiter:3.12.4"
+}
+
+tasks.named("test", Test).configure {
+    onlyIf { !project.hasProperty("buildSrc.skipTests") }
+    useJUnitPlatform()
+    jvmArgs(
+            "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+            "--add-opens", "java.base/java.util=ALL-UNNAMED"
+    )
+}
