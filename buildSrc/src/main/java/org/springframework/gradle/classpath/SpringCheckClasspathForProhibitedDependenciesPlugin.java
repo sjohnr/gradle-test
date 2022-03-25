@@ -31,19 +31,18 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Rob Winch
  */
-public class CheckClasspathForProhibitedDependenciesPlugin implements Plugin<Project> {
+public class SpringCheckClasspathForProhibitedDependenciesPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().apply(CheckProhibitedDependenciesLifecyclePlugin.class);
-		project.getPlugins().withType(JavaBasePlugin.class, javaBasePlugin -> {
-			configureProhibitedDependencyChecks(project);
-		});
+		project.getPlugins().apply(SpringCheckProhibitedDependenciesLifecyclePlugin.class);
+		project.getPlugins().withType(JavaBasePlugin.class, javaBasePlugin ->
+				configureProhibitedDependencyChecks(project));
 	}
 
 	private void configureProhibitedDependencyChecks(Project project) {
 		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
-		sourceSets.all((sourceSet) -> createProhibitedDependenciesChecks(project,
+		sourceSets.all(sourceSet -> createProhibitedDependenciesChecks(project,
 				sourceSet.getCompileClasspathConfigurationName(), sourceSet.getRuntimeClasspathConfigurationName()));
 	}
 
@@ -63,6 +62,6 @@ public class CheckClasspathForProhibitedDependenciesPlugin implements Plugin<Pro
 					checkClasspath.setDescription("Checks " + classpath.getName() + " for prohibited dependencies");
 					checkClasspath.setClasspath(classpath);
 				});
-		project.getTasks().named(CheckProhibitedDependenciesLifecyclePlugin.CHECK_PROHIBITED_DEPENDENCIES_TASK_NAME, checkProhibitedTask -> checkProhibitedTask.dependsOn(checkClasspathTask));
+		project.getTasks().named(SpringCheckProhibitedDependenciesLifecyclePlugin.CHECK_PROHIBITED_DEPENDENCIES_TASK_NAME, checkProhibitedTask -> checkProhibitedTask.dependsOn(checkClasspathTask));
 	}
 }

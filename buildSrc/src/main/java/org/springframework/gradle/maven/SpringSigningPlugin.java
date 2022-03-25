@@ -16,10 +16,8 @@
 
 package org.springframework.gradle.maven;
 
-import java.util.Objects;
 import java.util.concurrent.Callable;
 
-import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.publish.Publication;
@@ -34,7 +32,7 @@ public class SpringSigningPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		project.getPluginManager().apply(SigningPlugin.class);
-		project.getPlugins().withType(SigningPlugin.class).all((signingPlugin) -> {
+		project.getPlugins().withType(SigningPlugin.class).all(signingPlugin -> {
 			boolean hasSigningKey = project.hasProperty("signing.keyId") || project.hasProperty("signingKey");
 			if (hasSigningKey) {
 				sign(project);
@@ -43,8 +41,7 @@ public class SpringSigningPlugin implements Plugin<Project> {
 	}
 
 	private void sign(Project project) {
-		SigningExtension signing = project.getExtensions().findByType(SigningExtension.class);
-		Objects.requireNonNull(signing, "SigningExtension not found");
+		SigningExtension signing = project.getExtensions().getByType(SigningExtension.class);
 		signing.setRequired((Callable<Boolean>) () -> project.getGradle().getTaskGraph().hasTask("publishArtifacts"));
 
 		String signingKeyId = (String) project.findProperty("signingKeyId");
@@ -55,10 +52,8 @@ public class SpringSigningPlugin implements Plugin<Project> {
 		} else {
 			signing.useInMemoryPgpKeys(signingKey, signingPassword);
 		}
-		project.getPlugins().withType(PublishAllJavaComponentsPlugin.class).all((publishingPlugin) -> {
-			PublishingExtension publishing = project.getExtensions().findByType(PublishingExtension.class);
-			Objects.requireNonNull(publishing, "PublishingExtension not found");
-
+		project.getPlugins().withType(SpringPublishAllJavaComponentsPlugin.class, publishingPlugin -> {
+			PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
 			Publication maven = publishing.getPublications().getByName("mavenJava");
 			signing.sign(maven);
 		});

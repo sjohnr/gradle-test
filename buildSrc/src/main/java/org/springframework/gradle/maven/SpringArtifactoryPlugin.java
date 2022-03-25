@@ -36,10 +36,10 @@ public class SpringArtifactoryPlugin implements Plugin<Project> {
 
 		@SuppressWarnings("deprecation")
 		ArtifactoryPluginConvention artifactoryExtension = project.getConvention().getPlugin(ArtifactoryPluginConvention.class);
-		artifactoryExtension.artifactory((artifactory) -> {
+		artifactoryExtension.artifactory(artifactory -> {
 			artifactory.setContextUrl("https://repo.spring.io");
-			artifactory.publish((publish) -> {
-				publish.repository((repository) -> {
+			artifactory.publish(publish -> {
+				publish.repository(repository -> {
 					String repoKey = isSnapshot ? "libs-snapshot-local" : isMilestone ? "libs-milestone-local" : "libs-release-local";
 					repository.setRepoKey(repoKey);
 					if (project.hasProperty("artifactoryUsername")) {
@@ -47,7 +47,7 @@ public class SpringArtifactoryPlugin implements Plugin<Project> {
 						repository.setPassword(project.findProperty("artifactoryPassword"));
 					}
 				});
-				publish.defaults((defaults) -> defaults.publications("mavenJava"));
+				publish.defaults(defaults -> defaults.publications("mavenJava"));
 			});
 		});
 	}

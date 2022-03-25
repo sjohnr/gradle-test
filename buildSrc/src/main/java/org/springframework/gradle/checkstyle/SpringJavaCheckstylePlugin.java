@@ -17,7 +17,6 @@
 package org.springframework.gradle.checkstyle;
 
 import java.io.File;
-import java.util.Objects;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -36,7 +35,7 @@ public class SpringJavaCheckstylePlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {
+		project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
 			File checkstyleDir = project.getRootProject().file(CHECKSTYLE_DIR);
 			if (checkstyleDir.exists() && checkstyleDir.isDirectory()) {
 				project.getPluginManager().apply(CheckstylePlugin.class);
@@ -44,8 +43,7 @@ public class SpringJavaCheckstylePlugin implements Plugin<Project> {
 				project.getDependencies().add("checkstyle", "io.spring.javaformat:spring-javaformat-checkstyle:0.0.31");
 				project.getDependencies().add("checkstyle", "io.spring.nohttp:nohttp-checkstyle:0.0.10");
 
-				CheckstyleExtension checkstyle = project.getExtensions().findByType(CheckstyleExtension.class);
-				Objects.requireNonNull(checkstyle, "CheckstyleExtension not found");
+				CheckstyleExtension checkstyle = project.getExtensions().getByType(CheckstyleExtension.class);
 				checkstyle.getConfigDirectory().set(checkstyleDir);
 				// NOTE: See build.gradle for actual version number
 				checkstyle.setToolVersion("8.34");

@@ -16,26 +16,25 @@
 
 package org.springframework.gradle.maven;
 
+import io.spring.gradle.convention.Utils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.PluginManager;
-import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 
 /**
  * @author Steve Riesenberg
  */
-public class SpringMavenPlugin implements Plugin<Project> {
+public class SpringPublishArtifactsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
-		// Apply default plugins
-		PluginManager pluginManager = project.getPluginManager();
-		pluginManager.apply(MavenPublishPlugin.class);
-
-		pluginManager.apply(SpringSigningPlugin.class);
-		pluginManager.apply(SpringMavenPublishingConventionsPlugin.class);
-		pluginManager.apply(SpringPublishAllJavaComponentsPlugin.class);
-		pluginManager.apply(SpringPublishLocalPlugin.class);
-		pluginManager.apply(SpringPublishArtifactsPlugin.class);
-		pluginManager.apply(SpringArtifactoryPlugin.class);
+		project.getTasks().register("publishArtifacts", publishArtifacts -> {
+			publishArtifacts.setGroup("Publishing");
+			publishArtifacts.setDescription("Publish the artifacts to either Artifactory or Maven Central based on the version");
+			if (Utils.isRelease(project)) {
+				publishArtifacts.dependsOn("publishToOssrh");
+			}
+			else {
+				publishArtifacts.dependsOn("artifactoryPublish");
+			}
+		});
 	}
 }

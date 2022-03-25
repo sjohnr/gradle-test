@@ -18,7 +18,6 @@ package org.springframework.gradle.maven;
 
 import java.net.URI;
 import java.time.Duration;
-import java.util.Objects;
 
 import io.github.gradlenexus.publishplugin.NexusPublishExtension;
 import io.github.gradlenexus.publishplugin.NexusPublishPlugin;
@@ -35,8 +34,7 @@ public class SpringNexusPlugin implements Plugin<Project> {
 		project.getPlugins().apply(NexusPublishPlugin.class);
 
 		// Create ossrh repository
-		NexusPublishExtension nexusPublishing = project.getExtensions().findByType(NexusPublishExtension.class);
-		Objects.requireNonNull(nexusPublishing, "NexusPublishExtension not found");
+		NexusPublishExtension nexusPublishing = project.getExtensions().getByType(NexusPublishExtension.class);
 		nexusPublishing.getRepositories().create("ossrh", nexusRepository -> {
 			nexusRepository.getNexusUrl().set(URI.create("https://s01.oss.sonatype.org/service/local/"));
 			nexusRepository.getSnapshotRepositoryUrl().set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"));

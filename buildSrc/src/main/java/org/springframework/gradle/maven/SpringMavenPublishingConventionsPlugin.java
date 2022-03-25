@@ -33,14 +33,14 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 /**
  * @author Steve Riesenberg
  */
-public class MavenPublishingConventionsPlugin implements Plugin<Project> {
+public class SpringMavenPublishingConventionsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().withType(MavenPublishPlugin.class).all((mavenPublish) -> {
+		project.getPlugins().withType(MavenPublishPlugin.class, mavenPublish -> {
 			PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-			publishing.getPublications().withType(MavenPublication.class)
-					.all((mavenPublication) -> MavenPublishingConventionsPlugin.this.customizePom(mavenPublication.getPom(), project));
-			MavenPublishingConventionsPlugin.this.customizeJavaPlugin(project);
+			publishing.getPublications().withType(MavenPublication.class, mavenPublication ->
+					customizePom(mavenPublication.getPom(), project));
+			SpringMavenPublishingConventionsPlugin.this.customizeJavaPlugin(project);
 		});
 	}
 
@@ -61,14 +61,14 @@ public class MavenPublishingConventionsPlugin implements Plugin<Project> {
 	}
 
 	private void customizeLicences(MavenPomLicenseSpec licences) {
-		licences.license((licence) -> {
+		licences.license(licence -> {
 			licence.getName().set("Apache License, Version 2.0");
 			licence.getUrl().set("https://www.apache.org/licenses/LICENSE-2.0");
 		});
 	}
 
 	private void customizeDevelopers(MavenPomDeveloperSpec developers) {
-		developers.developer((developer) -> {
+		developers.developer(developer -> {
 			developer.getName().set("VMware");
 			developer.getEmail().set("info@vmware.com");
 			developer.getOrganization().set("VMware, Inc.");
@@ -88,7 +88,7 @@ public class MavenPublishingConventionsPlugin implements Plugin<Project> {
 	}
 
 	private void customizeJavaPlugin(Project project) {
-		project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {
+		project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
 			JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
 			extension.withJavadocJar();
 			extension.withSourcesJar();

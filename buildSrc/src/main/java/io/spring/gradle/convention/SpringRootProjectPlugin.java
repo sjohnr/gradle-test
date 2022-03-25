@@ -17,7 +17,6 @@
 package io.spring.gradle.convention;
 
 import java.io.File;
-import java.util.Objects;
 
 import io.spring.nohttp.gradle.NoHttpExtension;
 import io.spring.nohttp.gradle.NoHttpPlugin;
@@ -27,13 +26,13 @@ import org.gradle.api.Task;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.PluginManager;
 
-import org.springframework.gradle.classpath.CheckProhibitedDependenciesLifecyclePlugin;
+import org.springframework.gradle.classpath.SpringCheckProhibitedDependenciesLifecyclePlugin;
 import org.springframework.gradle.maven.SpringNexusPlugin;
 
 /**
  * @author Steve Riesenberg
  */
-public class RootProjectPlugin implements Plugin<Project> {
+public class SpringRootProjectPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		// Apply default plugins
@@ -41,14 +40,13 @@ public class RootProjectPlugin implements Plugin<Project> {
 		pluginManager.apply(BasePlugin.class);
 		pluginManager.apply(NoHttpPlugin.class);
 		pluginManager.apply(SpringNexusPlugin.class);
-		pluginManager.apply(CheckProhibitedDependenciesLifecyclePlugin.class);
+		pluginManager.apply(SpringCheckProhibitedDependenciesLifecyclePlugin.class);
 
 		// Apply default repositories
 		project.getRepositories().mavenCentral();
 
 		// Configure nohttp plugin
 		NoHttpExtension nohttp = project.getExtensions().getByType(NoHttpExtension.class);
-		Objects.requireNonNull(nohttp, "NoHttpExtension not found");
 		File allowlistFile = project.getRootProject().file("etc/nohttp/allowlist.lines");
 		nohttp.setAllowlistFile(allowlistFile);
 		nohttp.getSource().exclude("buildSrc/build/**");

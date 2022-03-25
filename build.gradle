@@ -1,5 +1,5 @@
 plugins {
-    id "io.spring.convention.root"
+    id "io.spring.convention.spring-root"
 }
 
 group = "com.example"

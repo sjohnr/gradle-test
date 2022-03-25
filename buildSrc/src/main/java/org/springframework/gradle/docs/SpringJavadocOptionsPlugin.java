@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.gradle.maven;
+package org.springframework.gradle.docs;
 
-import io.spring.gradle.convention.Utils;
-import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
+import org.gradle.api.tasks.javadoc.Javadoc;
+import org.gradle.external.javadoc.StandardJavadocDocletOptions;
 
 /**
  * @author Steve Riesenberg
  */
-public class PublishArtifactsPlugin implements Plugin<Project> {
+public class SpringJavadocOptionsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
-		project.getTasks().register("publishArtifacts", (publishArtifacts) -> {
-			publishArtifacts.setGroup("Publishing");
-			publishArtifacts.setDescription("Publish the artifacts to either Artifactory or Maven Central based on the version");
-			if (Utils.isRelease(project)) {
-				publishArtifacts.dependsOn("publishToOssrh");
-			}
-			else {
-				publishArtifacts.dependsOn("artifactoryPublish");
-			}
+		project.getTasks().withType(Javadoc.class, javadoc -> {
+			StandardJavadocDocletOptions options = (StandardJavadocDocletOptions) javadoc.getOptions();
+			options.addStringOption("Xdoclint:none", "-quiet");
 		});
 	}
 }
