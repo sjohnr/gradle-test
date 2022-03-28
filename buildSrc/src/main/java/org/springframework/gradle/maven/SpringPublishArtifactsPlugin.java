@@ -31,8 +31,7 @@ public class SpringPublishArtifactsPlugin implements Plugin<Project> {
 			publishArtifacts.setDescription("Publish the artifacts to either Artifactory or Maven Central based on the version");
 			if (Utils.isRelease(project)) {
 				publishArtifacts.dependsOn("publishToOssrh");
-			}
-			else {
+			} else {
 				publishArtifacts.dependsOn("artifactoryPublish");
 			}
 		});
