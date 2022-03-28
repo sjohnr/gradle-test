@@ -28,7 +28,7 @@ def buildFiles = fileTree(rootDir) {
 }
 
 buildFiles.forEach { buildFile ->
-    def isDefaultName = buildFile.name == "build.gradle"
+    def isDefaultName = buildFile.name == "build.gradle" || buildFile.name == "build.gradle.kts"
     def isKotlin = buildFile.name.endsWith ".kts"
     if (isDefaultName) {
         def buildFilePath = buildFile.parentFile.absolutePath
