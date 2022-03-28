@@ -17,6 +17,7 @@
 package org.springframework.gradle.checkstyle;
 
 import java.io.File;
+import java.util.Objects;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -32,6 +33,12 @@ import org.gradle.api.plugins.quality.CheckstylePlugin;
  */
 public class SpringJavaCheckstylePlugin implements Plugin<Project> {
 	private static final String CHECKSTYLE_DIR = "etc/checkstyle";
+	private static final String SPRING_JAVAFORMAT_VERSION_PROPERTY = "springJavaformatVersion";
+	private static final String DEFAULT_SPRING_JAVAFORMAT_VERSION = "0.0.31";
+	private static final String NOHTTP_CHECKSTYLE_VERSION_PROPERTY = "nohttpCheckstyleVersion";
+	private static final String DEFAULT_NOHTTP_CHECKSTYLE_VERSION = "0.0.10";
+	private static final String CHECKSTYLE_TOOL_VERSION_PROPERTY = "checkstyleToolVersion";
+	private static final String DEFAULT_CHECKSTYLE_TOOL_VERSION = "8.34";
 
 	@Override
 	public void apply(Project project) {
@@ -39,15 +46,41 @@ public class SpringJavaCheckstylePlugin implements Plugin<Project> {
 			File checkstyleDir = project.getRootProject().file(CHECKSTYLE_DIR);
 			if (checkstyleDir.exists() && checkstyleDir.isDirectory()) {
 				project.getPluginManager().apply(CheckstylePlugin.class);
-				// NOTE: See gradle.properties#springJavaformatVersion and build.gradle for actual version number
-				project.getDependencies().add("checkstyle", "io.spring.javaformat:spring-javaformat-checkstyle:0.0.31");
-				project.getDependencies().add("checkstyle", "io.spring.nohttp:nohttp-checkstyle:0.0.10");
+
+				// NOTE: See gradle.properties#springJavaformatVersion for actual version number
+				project.getDependencies().add("checkstyle", "io.spring.javaformat:spring-javaformat-checkstyle:" + getSpringJavaformatVersion(project));
+				// NOTE: See gradle.properties#nohttpCheckstyleVersion for actual version number
+				project.getDependencies().add("checkstyle", "io.spring.nohttp:nohttp-checkstyle:" + getNohttpCheckstyleVersion(project));
 
 				CheckstyleExtension checkstyle = project.getExtensions().getByType(CheckstyleExtension.class);
 				checkstyle.getConfigDirectory().set(checkstyleDir);
-				// NOTE: See build.gradle for actual version number
-				checkstyle.setToolVersion("8.34");
+				// NOTE: See gradle.properties#checkstyleToolVersion for actual version number
+				checkstyle.setToolVersion(getCheckstyleToolVersion(project));
 			}
 		});
+	}
+
+	private static String getSpringJavaformatVersion(Project project) {
+		String springJavaformatVersion = DEFAULT_SPRING_JAVAFORMAT_VERSION;
+		if (project.hasProperty(SPRING_JAVAFORMAT_VERSION_PROPERTY)) {
+			springJavaformatVersion = Objects.requireNonNull(project.findProperty(SPRING_JAVAFORMAT_VERSION_PROPERTY)).toString();
+		}
+		return springJavaformatVersion;
+	}
+
+	private static String getNohttpCheckstyleVersion(Project project) {
+		String nohttpCheckstyleVersion = DEFAULT_NOHTTP_CHECKSTYLE_VERSION;
+		if (project.hasProperty(NOHTTP_CHECKSTYLE_VERSION_PROPERTY)) {
+			nohttpCheckstyleVersion = Objects.requireNonNull(project.findProperty(NOHTTP_CHECKSTYLE_VERSION_PROPERTY)).toString();
+		}
+		return nohttpCheckstyleVersion;
+	}
+
+	private static String getCheckstyleToolVersion(Project project) {
+		String checkstyleToolVersion = DEFAULT_CHECKSTYLE_TOOL_VERSION;
+		if (project.hasProperty(CHECKSTYLE_TOOL_VERSION_PROPERTY)) {
+			checkstyleToolVersion = Objects.requireNonNull(project.findProperty(CHECKSTYLE_TOOL_VERSION_PROPERTY)).toString();
+		}
+		return checkstyleToolVersion;
 	}
 }

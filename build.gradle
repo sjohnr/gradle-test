@@ -5,19 +5,6 @@ plugins {
 group = "com.example"
 description = "Gradle Test"
 
-subprojects {
-    pluginManager.withPlugin("io.spring.conventions.checkstyle") { plugin ->
-        configure(plugin) {
-            dependencies {
-                checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:$springJavaformatVersion"
-            }
-            checkstyle {
-                toolVersion = "8.34"
-            }
-        }
-    }
-}
-
 if (hasProperty("buildScan")) {
     buildScan {
         termsOfServiceUrl = "https://gradle.com/terms-of-service"

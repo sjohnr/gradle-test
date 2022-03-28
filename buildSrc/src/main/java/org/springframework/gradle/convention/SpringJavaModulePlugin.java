@@ -33,11 +33,11 @@ import org.gradle.api.tasks.testing.Test;
 import org.gradle.jvm.tasks.Jar;
 import org.gradle.plugins.ide.eclipse.EclipseWtpPlugin;
 import org.gradle.plugins.ide.idea.IdeaPlugin;
-import org.gradle.testing.jacoco.plugins.JacocoPlugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper;
 
 import org.springframework.gradle.checkstyle.SpringJavaCheckstylePlugin;
 import org.springframework.gradle.docs.SpringJavadocOptionsPlugin;
+import org.springframework.gradle.jacoco.SpringJacocoPlugin;
 import org.springframework.gradle.maven.SpringRepositoryPlugin;
 import org.springframework.gradle.propdeps.SpringPropDepsEclipsePlugin;
 import org.springframework.gradle.propdeps.SpringPropDepsIdeaPlugin;
@@ -73,7 +73,7 @@ public class SpringJavaModulePlugin implements Plugin<Project> {
 		pluginManager.apply(SpringJavaFormatPlugin.class);
 		pluginManager.apply(SpringJavaCheckstylePlugin.class);
 		pluginManager.apply(SpringCopyPropertiesPlugin.class);
-		pluginManager.apply(JacocoPlugin.class);
+		pluginManager.apply(SpringJacocoPlugin.class);
 
 		// Apply Java source compatibility version
 		JavaPluginExtension java = project.getExtensions().getByType(JavaPluginExtension.class);
