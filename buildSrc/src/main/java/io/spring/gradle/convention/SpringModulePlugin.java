@@ -24,7 +24,6 @@ import org.gradle.api.plugins.PluginManager;
 import org.springframework.gradle.SpringJavaPlugin;
 import org.springframework.gradle.SpringMavenPlugin;
 import org.springframework.gradle.classpath.SpringCheckClasspathForProhibitedDependenciesPlugin;
-import org.springframework.gradle.management.SpringManagementConfigurationPlugin;
 
 /**
  * @author Steve Riesenberg
@@ -35,7 +34,6 @@ public class SpringModulePlugin implements Plugin<Project> {
 		// Apply default plugins
 		PluginManager pluginManager = project.getPluginManager();
 		pluginManager.apply(JavaLibraryPlugin.class);
-		pluginManager.apply(SpringManagementConfigurationPlugin.class);
 		pluginManager.apply(SpringJavaPlugin.class);
 		pluginManager.apply(SpringMavenPlugin.class);
 		pluginManager.apply(SpringCheckClasspathForProhibitedDependenciesPlugin.class);

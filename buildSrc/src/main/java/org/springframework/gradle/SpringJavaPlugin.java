@@ -38,6 +38,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper;
 import org.springframework.gradle.checkstyle.SpringJavaCheckstylePlugin;
 import org.springframework.gradle.docs.SpringJavadocOptionsPlugin;
 import org.springframework.gradle.jacoco.SpringJacocoPlugin;
+import org.springframework.gradle.management.SpringManagementConfigurationPlugin;
 import org.springframework.gradle.maven.SpringRepositoryPlugin;
 import org.springframework.gradle.propdeps.SpringPropDepsEclipsePlugin;
 import org.springframework.gradle.propdeps.SpringPropDepsIdeaPlugin;
@@ -53,6 +54,7 @@ public class SpringJavaPlugin implements Plugin<Project> {
 		// Apply default plugins
 		PluginManager pluginManager = project.getPluginManager();
 		pluginManager.apply(JavaPlugin.class);
+		pluginManager.apply(SpringManagementConfigurationPlugin.class);
 		if (project.file("src/main/groovy").exists()
 				|| project.file("src/test/groovy").exists()
 				|| project.file("src/integration-test/groovy").exists()) {
