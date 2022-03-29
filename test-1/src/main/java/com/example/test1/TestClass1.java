@@ -25,6 +25,7 @@ package com.example.test1;
  * @since 1.0
  */
 public class TestClass1 {
+
 	/**
 	 * This is a method.
 	 * @deprecated Use {@link #method2(String)} instead
@@ -35,9 +36,9 @@ public class TestClass1 {
 
 	/**
 	 * This is another method.
-	 *
 	 * @param param This is a parameter
 	 */
 	public void method2(String param) {
 	}
+
 }

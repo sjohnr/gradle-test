@@ -23,4 +23,5 @@ package com.example.test2;
  * @since 1.2
  */
 public class TestClass3 {
+
 }

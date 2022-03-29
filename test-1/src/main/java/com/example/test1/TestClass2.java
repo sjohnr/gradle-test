@@ -25,8 +25,10 @@ package com.example.test1;
  */
 @Deprecated
 public class TestClass2 {
+
 	/**
 	 * This is a constant.
 	 */
 	public static final String CONSTANT1 = "some-constant";
+
 }
