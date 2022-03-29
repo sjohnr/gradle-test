@@ -3,5 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation "javax.servlet:javax.servlet-api:4.0.1"
+    management platform(project(":dependencies"))
+    implementation "javax.servlet:javax.servlet-api"
+    implementation "org.springframework:spring-core"
 }
