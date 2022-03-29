@@ -16,18 +16,15 @@
 
 package io.spring.gradle.convention;
 
-import java.io.File;
-
-import io.spring.nohttp.gradle.NoHttpExtension;
-import io.spring.nohttp.gradle.NoHttpPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.PluginManager;
 
 import org.springframework.gradle.classpath.SpringCheckProhibitedDependenciesLifecyclePlugin;
 import org.springframework.gradle.maven.SpringNexusPlugin;
+import org.springframework.gradle.nohttp.SpringNoHttpPlugin;
+import org.springframework.gradle.sonarqube.SpringSonarQubePlugin;
 
 /**
  * @author Steve Riesenberg
@@ -38,24 +35,12 @@ public class SpringRootProjectPlugin implements Plugin<Project> {
 		// Apply default plugins
 		PluginManager pluginManager = project.getPluginManager();
 		pluginManager.apply(BasePlugin.class);
-		pluginManager.apply(NoHttpPlugin.class);
+		pluginManager.apply(SpringNoHttpPlugin.class);
 		pluginManager.apply(SpringNexusPlugin.class);
 		pluginManager.apply(SpringCheckProhibitedDependenciesLifecyclePlugin.class);
+		pluginManager.apply(SpringSonarQubePlugin.class);
 
 		// Apply default repositories
 		project.getRepositories().mavenCentral();
-
-		// Configure nohttp plugin
-		NoHttpExtension nohttp = project.getExtensions().getByType(NoHttpExtension.class);
-		File allowlistFile = project.getRootProject().file("etc/nohttp/allowlist.lines");
-		nohttp.setAllowlistFile(allowlistFile);
-		nohttp.getSource().exclude("buildSrc/build/**");
-
-		// Ensure release build automatically closes and releases staging repository
-		Task finalizeDeployArtifacts = project.task("finalizeDeployArtifacts");
-		if (Utils.isRelease(project) && project.hasProperty("ossrhUsername")) {
-			Task closeAndReleaseOssrhStagingRepository = project.getTasks().findByName("closeAndReleaseOssrhStagingRepository");
-			finalizeDeployArtifacts.dependsOn(closeAndReleaseOssrhStagingRepository);
-		}
 	}
 }

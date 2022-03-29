@@ -21,8 +21,10 @@ import java.time.Duration;
 
 import io.github.gradlenexus.publishplugin.NexusPublishExtension;
 import io.github.gradlenexus.publishplugin.NexusPublishPlugin;
+import io.spring.gradle.convention.Utils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 
 /**
  * @author Steve Riesenberg
@@ -30,7 +32,7 @@ import org.gradle.api.Project;
 public class SpringNexusPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
-		// Apply base plugin
+		// Apply nexus publish plugin
 		project.getPlugins().apply(NexusPublishPlugin.class);
 
 		// Create ossrh repository
@@ -40,8 +42,15 @@ public class SpringNexusPlugin implements Plugin<Project> {
 			nexusRepository.getSnapshotRepositoryUrl().set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"));
 		});
 
-		// Apply configuration
+		// Configure timeouts
 		nexusPublishing.getConnectTimeout().set(Duration.ofMinutes(3));
 		nexusPublishing.getClientTimeout().set(Duration.ofMinutes(3));
+
+		// Ensure release build automatically closes and releases staging repository
+		Task finalizeDeployArtifacts = project.task("finalizeDeployArtifacts");
+		if (Utils.isRelease(project) && project.hasProperty("ossrhUsername")) {
+			Task closeAndReleaseOssrhStagingRepository = project.getTasks().findByName("closeAndReleaseOssrhStagingRepository");
+			finalizeDeployArtifacts.dependsOn(closeAndReleaseOssrhStagingRepository);
+		}
 	}
 }

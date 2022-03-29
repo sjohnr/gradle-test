@@ -26,6 +26,7 @@ import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.bundling.Zip;
 
 import org.springframework.gradle.docs.SpringJavadocApiPlugin;
+import org.springframework.gradle.docs.SpringJavadocOptionsPlugin;
 
 /**
  * Aggregates asciidoc, javadoc, and deploying of the docs into a single plugin.
@@ -35,16 +36,18 @@ import org.springframework.gradle.docs.SpringJavadocApiPlugin;
 public class SpringDocsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
+		// Apply default plugins
 		PluginManager pluginManager = project.getPluginManager();
 		pluginManager.apply(BasePlugin.class);
-		// Applying plugin via id since it requires groovy compilation
+		// Note: Applying plugin via id since it requires groovy compilation
 		pluginManager.apply("org.springframework.gradle.deploy-docs");
 		pluginManager.apply(SpringJavadocApiPlugin.class);
+		pluginManager.apply(SpringJavadocOptionsPlugin.class);
 
+		// Add task to create documentation archive
 		TaskContainer tasks = project.getTasks();
 		Zip docsZip = tasks.create("docsZip", Zip.class, zip -> {
 			zip.dependsOn(tasks.getByName("api"));
-
 			zip.setGroup("Distribution");
 			zip.getArchiveBaseName().set(project.getRootProject().getName());
 			zip.getArchiveClassifier().set("docs");
@@ -56,12 +59,13 @@ public class SpringDocsPlugin implements Plugin<Project> {
 			zip.setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE);
 		});
 
-		Task docs = tasks.create("docs", task -> {
-			task.setGroup("Documentation");
-			task.setDescription("An aggregator task to generate all the documentation");
-			task.dependsOn(docsZip);
-		});
+		// Add task to aggregate documentation
+		Task docs = tasks.create("docs");
+		docs.dependsOn(docsZip);
+		docs.setGroup("Documentation");
+		docs.setDescription("An aggregator task to generate all the documentation");
 
+		// Wire docs task into the build
 		tasks.getByName("assemble").dependsOn(docs);
 	}
 }

@@ -23,9 +23,11 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import io.spring.gradle.convention.SpringModulePlugin;
+import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.javadoc.Javadoc;
@@ -42,20 +44,26 @@ public class SpringJavadocApiPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		Project rootProject = project.getRootProject();
+		// Create task to generate aggregated docs
+		Javadoc api = project.getTasks().create("api", Javadoc.class, javadoc -> {
+			javadoc.setGroup("Documentation");
+			javadoc.setDescription("Generates aggregated Javadoc API documentation.");
+		});
 
-		Javadoc api = project.getTasks().create("api", Javadoc.class, task -> {
-			if (JavaVersion.current().isJava11Compatible()) {
-				project.copy(copy -> copy.from(task.getDestinationDir())
-						.into(task.getDestinationDir())
-						.include("element-list")
-						.rename("element-list", "package-list"));
+		// Note: The following action cannot be a lambda, for groovy compatibility
+		api.doLast(new Action<Task>() {
+			@Override
+			public void execute(Task task) {
+				if (JavaVersion.current().isJava11Compatible()) {
+					project.copy(copy -> copy.from(api.getDestinationDir())
+							.into(api.getDestinationDir())
+							.include("element-list")
+							.rename("element-list", "package-list"));
+				}
 			}
 		});
-		api.setGroup("Documentation");
-		api.setDescription("Generates aggregated Javadoc API documentation.");
 
-		Set<Project> subprojects = rootProject.getSubprojects();
+		Set<Project> subprojects = project.getRootProject().getSubprojects();
 		for (Project subproject : subprojects) {
 			addProject(api, subproject);
 		}
@@ -66,8 +74,6 @@ public class SpringJavadocApiPlugin implements Plugin<Project> {
 
 		api.setMaxMemory("1024m");
 		api.setDestinationDir(new File(project.getBuildDir(), "api"));
-
-		project.getPluginManager().apply(SpringJavadocOptionsPlugin.class);
 	}
 
 	public void setExcludes(String... excludes) {

@@ -22,11 +22,12 @@ import org.gradle.api.Project;
  * @author Steve Riesenberg
  */
 public class Utils {
-	private Utils() {}
+	private Utils() {
+	}
 
 	public static String getProjectName(Project project) {
 		String projectName = project.getRootProject().getName();
-		if(projectName.endsWith("-build")) {
+		if (projectName.endsWith("-build")) {
 			projectName = projectName.substring(0, projectName.length() - "-build".length());
 		}
 		return projectName;
