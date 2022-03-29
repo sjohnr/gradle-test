@@ -19,6 +19,7 @@ package org.springframework.gradle.maven;
 import io.spring.gradle.convention.Utils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.jfrog.gradle.plugin.artifactory.ArtifactoryPlugin;
 import org.jfrog.gradle.plugin.artifactory.dsl.ArtifactoryPluginConvention;
 
 /**
@@ -28,7 +29,7 @@ public class SpringArtifactoryPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		// Apply base plugin
-		project.getPlugins().apply("com.jfrog.artifactory");
+		project.getPlugins().apply(ArtifactoryPlugin.class);
 
 		// Apply artifactory repository configuration
 		boolean isSnapshot = Utils.isSnapshot(project);
