@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.gradle.convention;
+package org.springframework.gradle;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,11 +42,12 @@ import org.springframework.gradle.maven.SpringRepositoryPlugin;
 import org.springframework.gradle.propdeps.SpringPropDepsEclipsePlugin;
 import org.springframework.gradle.propdeps.SpringPropDepsIdeaPlugin;
 import org.springframework.gradle.propdeps.SpringPropDepsPlugin;
+import org.springframework.gradle.properties.SpringCopyPropertiesPlugin;
 
 /**
  * @author Steve Riesenberg
  */
-public class SpringJavaModulePlugin implements Plugin<Project> {
+public class SpringJavaPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		// Apply default plugins

@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.gradle.maven;
+package org.springframework.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.PluginManager;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
+
+import org.springframework.gradle.maven.SpringArtifactoryPlugin;
+import org.springframework.gradle.maven.SpringMavenPublishingConventionsPlugin;
+import org.springframework.gradle.maven.SpringPublishAllJavaComponentsPlugin;
+import org.springframework.gradle.maven.SpringPublishArtifactsPlugin;
+import org.springframework.gradle.maven.SpringPublishLocalPlugin;
+import org.springframework.gradle.maven.SpringSigningPlugin;
 
 /**
  * @author Steve Riesenberg

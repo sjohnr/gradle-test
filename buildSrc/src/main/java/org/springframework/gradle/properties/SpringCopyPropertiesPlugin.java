@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.gradle.convention;
+package org.springframework.gradle.properties;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
