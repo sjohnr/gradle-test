@@ -24,7 +24,10 @@ package com.example.test1;
  * @deprecated Use {@link TestClass1} instead
  */
 @Deprecated
-public class TestClass2 {
+public final class TestClass2 {
+
+	private TestClass2() {
+	}
 
 	/**
 	 * This is a constant.

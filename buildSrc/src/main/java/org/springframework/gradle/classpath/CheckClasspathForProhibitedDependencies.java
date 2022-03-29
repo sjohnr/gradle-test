@@ -78,9 +78,10 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 		if (group.equals("javax.money")) {
 			return false;
 		}
-		if (group.startsWith("javax")) {
-			return true;
-		}
+		// TODO: Uncomment the following lines when upgrading to Spring Framework 6
+//		if (group.startsWith("javax")) {
+//			return true;
+//		}
 		if (group.equals("commons-logging")) {
 			return true;
 		}
