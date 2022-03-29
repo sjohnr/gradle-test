@@ -1,6 +1,7 @@
 plugins {
     id "java-gradle-plugin"
     id "java"
+    id "groovy"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
