@@ -21,9 +21,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import io.spring.gradle.convention.Utils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+
+import org.springframework.gradle.ProjectUtils;
 
 /**
  * @author Steve Riesenberg
@@ -36,8 +37,8 @@ public class SpringRepositoryPlugin implements Plugin<Project> {
 			forceMavenRepositories = Arrays.asList(((String) project.findProperty("forceMavenRepositories")).split(","));
 		}
 
-		boolean isImplicitSnapshotRepository = forceMavenRepositories.isEmpty() && Utils.isSnapshot(project);
-		boolean isImplicitMilestoneRepository = forceMavenRepositories.isEmpty() && Utils.isMilestone(project);
+		boolean isImplicitSnapshotRepository = forceMavenRepositories.isEmpty() && ProjectUtils.isSnapshot(project);
+		boolean isImplicitMilestoneRepository = forceMavenRepositories.isEmpty() && ProjectUtils.isMilestone(project);
 
 		boolean isSnapshot = isImplicitSnapshotRepository || forceMavenRepositories.contains("snapshot");
 		boolean isMilestone = isImplicitMilestoneRepository || forceMavenRepositories.contains("milestone");

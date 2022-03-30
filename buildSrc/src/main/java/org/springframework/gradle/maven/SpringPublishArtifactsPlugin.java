@@ -16,9 +16,10 @@
 
 package org.springframework.gradle.maven;
 
-import io.spring.gradle.convention.Utils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+
+import org.springframework.gradle.ProjectUtils;
 
 /**
  * @author Steve Riesenberg
@@ -29,7 +30,7 @@ public class SpringPublishArtifactsPlugin implements Plugin<Project> {
 		project.getTasks().register("publishArtifacts", publishArtifacts -> {
 			publishArtifacts.setGroup("Publishing");
 			publishArtifacts.setDescription("Publish the artifacts to either Artifactory or Maven Central based on the version");
-			if (Utils.isRelease(project)) {
+			if (ProjectUtils.isRelease(project)) {
 				publishArtifacts.dependsOn("publishToOssrh");
 			} else {
 				publishArtifacts.dependsOn("artifactoryPublish");

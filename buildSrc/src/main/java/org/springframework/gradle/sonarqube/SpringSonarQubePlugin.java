@@ -16,11 +16,12 @@
 
 package org.springframework.gradle.sonarqube;
 
-import io.spring.gradle.convention.Utils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.sonarqube.gradle.SonarQubeExtension;
 import org.sonarqube.gradle.SonarQubePlugin;
+
+import org.springframework.gradle.ProjectUtils;
 
 /**
  * @author Steve Riesenberg
@@ -34,7 +35,7 @@ public class SpringSonarQubePlugin implements Plugin<Project> {
 		// Configure sonarqube
 		SonarQubeExtension sonarqube = project.getExtensions().getByType(SonarQubeExtension.class);
 		sonarqube.properties(properties -> {
-			String projectName = Utils.getProjectName(project);
+			String projectName = ProjectUtils.getProjectName(project);
 			properties.property("sonar.java.coveragePlugin", "jacoco");
 			properties.property("sonar.projectName", projectName);
 			properties.property("sonar.jacoco.reportPath", project.getBuildDir().getName() + "/jacoco.exec");

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package io.spring.gradle.convention;
+package org.springframework.gradle;
 
 import org.gradle.api.Project;
 
 /**
  * @author Steve Riesenberg
  */
-public class Utils {
-	private Utils() {
+public class ProjectUtils {
+	private ProjectUtils() {
 	}
 
 	public static String getProjectName(Project project) {

@@ -16,11 +16,12 @@
 
 package org.springframework.gradle.maven;
 
-import io.spring.gradle.convention.Utils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.jfrog.gradle.plugin.artifactory.ArtifactoryPlugin;
 import org.jfrog.gradle.plugin.artifactory.dsl.ArtifactoryPluginConvention;
+
+import org.springframework.gradle.ProjectUtils;
 
 /**
  * @author Steve Riesenberg
@@ -32,8 +33,8 @@ public class SpringArtifactoryPlugin implements Plugin<Project> {
 		project.getPlugins().apply(ArtifactoryPlugin.class);
 
 		// Apply artifactory repository configuration
-		boolean isSnapshot = Utils.isSnapshot(project);
-		boolean isMilestone = Utils.isMilestone(project);
+		boolean isSnapshot = ProjectUtils.isSnapshot(project);
+		boolean isMilestone = ProjectUtils.isMilestone(project);
 
 		@SuppressWarnings("deprecation")
 		ArtifactoryPluginConvention artifactoryExtension = project.getConvention().getPlugin(ArtifactoryPluginConvention.class);
