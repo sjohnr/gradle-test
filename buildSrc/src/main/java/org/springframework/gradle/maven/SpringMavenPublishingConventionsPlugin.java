@@ -16,6 +16,8 @@
 
 package org.springframework.gradle.maven;
 
+import java.util.Collections;
+
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
@@ -69,10 +71,17 @@ public class SpringMavenPublishingConventionsPlugin implements Plugin<Project> {
 
 	private void customizeDevelopers(MavenPomDeveloperSpec developers) {
 		developers.developer(developer -> {
-			developer.getName().set("VMware");
-			developer.getEmail().set("info@vmware.com");
+			developer.getName().set("Joe Grandja");
+			developer.getEmail().set("jgrandja@vmware.com");
 			developer.getOrganization().set("VMware, Inc.");
-			developer.getOrganizationUrl().set("https://www.vmware.com");
+			developer.getOrganizationUrl().set("https://spring.io");
+			developer.getRoles().set(Collections.singletonList("Project lead"));
+		});
+		developers.developer(developer -> {
+			developer.getName().set("Steve Riesenberg");
+			developer.getEmail().set("sriesenberg@vmware.com");
+			developer.getOrganization().set("VMware, Inc.");
+			developer.getOrganizationUrl().set("https://spring.io");
 		});
 	}
 
