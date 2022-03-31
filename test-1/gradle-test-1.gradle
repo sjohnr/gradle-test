@@ -7,4 +7,7 @@ dependencies {
     implementation "org.springframework.security:spring-security-core"
     optional "org.springframework:spring-core"
     provided "javax.servlet:javax.servlet-api"
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "junit:junit"
+    testImplementation "org.junit.vintage:junit-vintage-engine"
 }
