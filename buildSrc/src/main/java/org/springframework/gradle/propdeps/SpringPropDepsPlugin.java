@@ -24,6 +24,8 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.javadoc.Javadoc;
 
+import org.springframework.gradle.management.SpringManagementConfigurationPlugin;
+
 /**
  * Plugin to allow 'optional' and 'provided' dependency configurations
  *
@@ -50,13 +52,13 @@ import org.gradle.api.tasks.javadoc.Javadoc;
 public class SpringPropDepsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().apply(JavaPlugin.class);
+		project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
+			Configuration provided = addConfiguration(project, "provided");
+			Configuration optional = addConfiguration(project, "optional");
 
-		Configuration provided = addConfiguration(project, "provided");
-		Configuration optional = addConfiguration(project, "optional");
-
-		Javadoc javadoc = (Javadoc) project.getTasks().getByName(JavaPlugin.JAVADOC_TASK_NAME);
-		javadoc.setClasspath(javadoc.getClasspath().plus(provided).plus(optional));
+			Javadoc javadoc = (Javadoc) project.getTasks().getByName(JavaPlugin.JAVADOC_TASK_NAME);
+			javadoc.setClasspath(javadoc.getClasspath().plus(provided).plus(optional));
+		});
 	}
 
 	private Configuration addConfiguration(Project project, String name) {
@@ -64,11 +66,13 @@ public class SpringPropDepsPlugin implements Plugin<Project> {
 		configuration.extendsFrom(project.getConfigurations().getByName("implementation"));
 		project.getPlugins().withType(JavaLibraryPlugin.class, javaLibraryPlugin ->
 				configuration.extendsFrom(project.getConfigurations().getByName("api")));
+		project.getPlugins().withType(SpringManagementConfigurationPlugin.class, springManagementConfigurationPlugin ->
+				configuration.extendsFrom(project.getConfigurations().getByName("management")));
 
 		JavaPluginExtension java = project.getExtensions().getByType(JavaPluginExtension.class);
 		java.getSourceSets().all(sourceSet -> {
-			sourceSet.getCompileClasspath().plus(configuration);
-			sourceSet.getRuntimeClasspath().plus(configuration);
+			sourceSet.setCompileClasspath(sourceSet.getCompileClasspath().plus(configuration));
+			sourceSet.setRuntimeClasspath(sourceSet.getRuntimeClasspath().plus(configuration));
 		});
 
 		return configuration;

@@ -27,8 +27,6 @@ import org.gradle.api.publish.VariantVersionMappingStrategy;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 
-import org.springframework.gradle.propdeps.SpringPropDepsPlugin;
-
 /**
  * Creates a Management configuration that is appropriate for adding a platform to that is not exposed externally. If
  * the JavaPlugin is applied, the compileClasspath, runtimeClasspath, testCompileClasspath, and testRuntimeClasspath
@@ -65,10 +63,6 @@ public class SpringManagementConfigurationPlugin implements Plugin<Project> {
 							versions.allVariants(VariantVersionMappingStrategy::fromResolutionResult)
 					);
 				}));
-			});
-			plugins.withType(SpringPropDepsPlugin.class, propDepsPlugin -> {
-				configurations.getByName("optional").extendsFrom(management);
-				configurations.getByName("provided").extendsFrom(management);
 			});
 		});
 	}

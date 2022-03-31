@@ -16,6 +16,9 @@
 
 package com.example.test1;
 
+import javax.servlet.Filter;
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * This is a test class.
  * <p>
@@ -32,6 +35,10 @@ public class TestClass1 {
 	 */
 	@Deprecated
 	public void method1() {
+		Filter filter = (request, response, chain) -> {
+			HttpServletRequest req = (HttpServletRequest) request;
+			System.out.println(req.getRequestURI());
+		};
 	}
 
 	/**

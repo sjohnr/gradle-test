@@ -18,7 +18,9 @@ package org.springframework.gradle.propdeps;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.PluginManager;
 import org.gradle.plugins.ide.eclipse.EclipsePlugin;
+import org.gradle.plugins.ide.eclipse.EclipseWtpPlugin;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 
 /**
@@ -31,8 +33,10 @@ import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 public class SpringPropDepsEclipsePlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().apply(SpringPropDepsPlugin.class);
-		project.getPlugins().apply(EclipsePlugin.class);
+		PluginManager pluginManager = project.getPluginManager();
+		pluginManager.apply(SpringPropDepsPlugin.class);
+		pluginManager.apply(EclipsePlugin.class);
+		pluginManager.apply(EclipseWtpPlugin.class);
 
 		EclipseModel eclipseModel = project.getExtensions().getByType(EclipseModel.class);
 		eclipseModel.classpath(classpath -> {

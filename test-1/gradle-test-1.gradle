@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     management platform(project(":dependencies"))
-    implementation "javax.servlet:javax.servlet-api"
-    implementation "org.springframework:spring-core"
+    implementation "org.springframework.security:spring-security-core"
+    optional "org.springframework:spring-core"
+    provided "javax.servlet:javax.servlet-api"
 }

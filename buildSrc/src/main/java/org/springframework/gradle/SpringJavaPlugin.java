@@ -31,8 +31,6 @@ import org.gradle.api.tasks.compile.CompileOptions;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.jvm.tasks.Jar;
-import org.gradle.plugins.ide.eclipse.EclipseWtpPlugin;
-import org.gradle.plugins.ide.idea.IdeaPlugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper;
 
 import org.springframework.gradle.checkstyle.SpringJavaCheckstylePlugin;
@@ -42,7 +40,6 @@ import org.springframework.gradle.management.SpringManagementConfigurationPlugin
 import org.springframework.gradle.maven.SpringRepositoryPlugin;
 import org.springframework.gradle.propdeps.SpringPropDepsEclipsePlugin;
 import org.springframework.gradle.propdeps.SpringPropDepsIdeaPlugin;
-import org.springframework.gradle.propdeps.SpringPropDepsPlugin;
 import org.springframework.gradle.properties.SpringCopyPropertiesPlugin;
 
 /**
@@ -67,9 +64,6 @@ public class SpringJavaPlugin implements Plugin<Project> {
 			pluginManager.apply(KotlinPluginWrapper.class);
 		}
 		pluginManager.apply(SpringRepositoryPlugin.class);
-		pluginManager.apply(EclipseWtpPlugin.class);
-		pluginManager.apply(IdeaPlugin.class);
-		pluginManager.apply(SpringPropDepsPlugin.class);
 		pluginManager.apply(SpringPropDepsEclipsePlugin.class);
 		pluginManager.apply(SpringPropDepsIdeaPlugin.class);
 		pluginManager.apply(SpringJavadocOptionsPlugin.class);

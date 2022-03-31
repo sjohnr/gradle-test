@@ -18,6 +18,7 @@ package org.springframework.gradle.propdeps;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.PluginManager;
 import org.gradle.plugins.ide.idea.IdeaPlugin;
 import org.gradle.plugins.ide.idea.model.IdeaModel;
 
@@ -34,8 +35,9 @@ import org.gradle.plugins.ide.idea.model.IdeaModel;
 public class SpringPropDepsIdeaPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().apply(SpringPropDepsPlugin.class);
-		project.getPlugins().apply(IdeaPlugin.class);
+		PluginManager pluginManager = project.getPluginManager();
+		pluginManager.apply(SpringPropDepsPlugin.class);
+		pluginManager.apply(IdeaPlugin.class);
 
 		IdeaModel ideaModel = project.getExtensions().getByType(IdeaModel.class);
 		ideaModel.module(idea -> {
