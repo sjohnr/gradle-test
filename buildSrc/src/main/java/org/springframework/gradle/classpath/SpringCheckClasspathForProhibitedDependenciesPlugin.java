@@ -24,7 +24,6 @@ import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
-
 import org.springframework.util.StringUtils;
 
 /**
@@ -36,13 +35,13 @@ public class SpringCheckClasspathForProhibitedDependenciesPlugin implements Plug
 	@Override
 	public void apply(Project project) {
 		project.getPlugins().apply(SpringCheckProhibitedDependenciesLifecyclePlugin.class);
-		project.getPlugins().withType(JavaBasePlugin.class, javaBasePlugin ->
+		project.getPlugins().withType(JavaBasePlugin.class, (javaBasePlugin) ->
 				configureProhibitedDependencyChecks(project));
 	}
 
 	private void configureProhibitedDependencyChecks(Project project) {
 		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
-		sourceSets.all(sourceSet -> createProhibitedDependenciesChecks(project,
+		sourceSets.all((sourceSet) -> createProhibitedDependenciesChecks(project,
 				sourceSet.getCompileClasspathConfigurationName(), sourceSet.getRuntimeClasspathConfigurationName()));
 	}
 
@@ -57,11 +56,11 @@ public class SpringCheckClasspathForProhibitedDependenciesPlugin implements Plug
 	private void createProhibitedDependenciesCheck(Configuration classpath, Project project) {
 		String taskName = "check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies");
 		TaskProvider<CheckClasspathForProhibitedDependencies> checkClasspathTask = project.getTasks().register(taskName,
-				CheckClasspathForProhibitedDependencies.class, checkClasspath -> {
+				CheckClasspathForProhibitedDependencies.class, (checkClasspath) -> {
 					checkClasspath.setGroup(LifecycleBasePlugin.CHECK_TASK_NAME);
 					checkClasspath.setDescription("Checks " + classpath.getName() + " for prohibited dependencies");
 					checkClasspath.setClasspath(classpath);
 				});
-		project.getTasks().named(SpringCheckProhibitedDependenciesLifecyclePlugin.CHECK_PROHIBITED_DEPENDENCIES_TASK_NAME, checkProhibitedTask -> checkProhibitedTask.dependsOn(checkClasspathTask));
+		project.getTasks().named(SpringCheckProhibitedDependenciesLifecyclePlugin.CHECK_PROHIBITED_DEPENDENCIES_TASK_NAME, (checkProhibitedTask) -> checkProhibitedTask.dependsOn(checkClasspathTask));
 	}
 }

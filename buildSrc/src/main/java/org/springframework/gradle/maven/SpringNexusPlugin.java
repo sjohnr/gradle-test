@@ -16,16 +16,15 @@
 
 package org.springframework.gradle.maven;
 
-import java.net.URI;
-import java.time.Duration;
-
 import io.github.gradlenexus.publishplugin.NexusPublishExtension;
 import io.github.gradlenexus.publishplugin.NexusPublishPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-
 import org.springframework.gradle.ProjectUtils;
+
+import java.net.URI;
+import java.time.Duration;
 
 /**
  * @author Steve Riesenberg
@@ -38,7 +37,7 @@ public class SpringNexusPlugin implements Plugin<Project> {
 
 		// Create ossrh repository
 		NexusPublishExtension nexusPublishing = project.getExtensions().getByType(NexusPublishExtension.class);
-		nexusPublishing.getRepositories().create("ossrh", nexusRepository -> {
+		nexusPublishing.getRepositories().create("ossrh", (nexusRepository) -> {
 			nexusRepository.getNexusUrl().set(URI.create("https://s01.oss.sonatype.org/service/local/"));
 			nexusRepository.getSnapshotRepositoryUrl().set(URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/"));
 		});

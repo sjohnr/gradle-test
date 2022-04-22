@@ -16,21 +16,15 @@
 
 package org.springframework.gradle.maven;
 
-import java.util.Collections;
-
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.publish.PublishingExtension;
-import org.gradle.api.publish.maven.MavenPom;
-import org.gradle.api.publish.maven.MavenPomDeveloperSpec;
-import org.gradle.api.publish.maven.MavenPomIssueManagement;
-import org.gradle.api.publish.maven.MavenPomLicenseSpec;
-import org.gradle.api.publish.maven.MavenPomOrganization;
-import org.gradle.api.publish.maven.MavenPomScm;
-import org.gradle.api.publish.maven.MavenPublication;
+import org.gradle.api.publish.maven.*;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
+
+import java.util.Collections;
 
 /**
  * @author Steve Riesenberg
@@ -38,9 +32,9 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 public class SpringMavenPublishingConventionsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().withType(MavenPublishPlugin.class, mavenPublish -> {
+		project.getPlugins().withType(MavenPublishPlugin.class, (mavenPublish) -> {
 			PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-			publishing.getPublications().withType(MavenPublication.class, mavenPublication ->
+			publishing.getPublications().withType(MavenPublication.class, (mavenPublication) ->
 					customizePom(mavenPublication.getPom(), project));
 			SpringMavenPublishingConventionsPlugin.this.customizeJavaPlugin(project);
 		});
@@ -63,21 +57,21 @@ public class SpringMavenPublishingConventionsPlugin implements Plugin<Project> {
 	}
 
 	private void customizeLicences(MavenPomLicenseSpec licences) {
-		licences.license(licence -> {
+		licences.license((licence) -> {
 			licence.getName().set("Apache License, Version 2.0");
 			licence.getUrl().set("https://www.apache.org/licenses/LICENSE-2.0");
 		});
 	}
 
 	private void customizeDevelopers(MavenPomDeveloperSpec developers) {
-		developers.developer(developer -> {
+		developers.developer((developer) -> {
 			developer.getName().set("Joe Grandja");
 			developer.getEmail().set("jgrandja@vmware.com");
 			developer.getOrganization().set("VMware, Inc.");
 			developer.getOrganizationUrl().set("https://spring.io");
 			developer.getRoles().set(Collections.singletonList("Project lead"));
 		});
-		developers.developer(developer -> {
+		developers.developer((developer) -> {
 			developer.getName().set("Steve Riesenberg");
 			developer.getEmail().set("sriesenberg@vmware.com");
 			developer.getOrganization().set("VMware, Inc.");
@@ -97,7 +91,7 @@ public class SpringMavenPublishingConventionsPlugin implements Plugin<Project> {
 	}
 
 	private void customizeJavaPlugin(Project project) {
-		project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
+		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
 			JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
 			extension.withJavadocJar();
 			extension.withSourcesJar();

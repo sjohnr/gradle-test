@@ -16,15 +16,14 @@
 
 package org.springframework.gradle.maven;
 
+import org.gradle.api.Plugin;
+import org.gradle.api.Project;
+import org.springframework.gradle.ProjectUtils;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
-
-import org.springframework.gradle.ProjectUtils;
 
 /**
  * @author Steve Riesenberg
@@ -57,10 +56,10 @@ public class SpringRepositoryPlugin implements Plugin<Project> {
 	}
 
 	private void repository(Project project, String name, String url) {
-		project.getRepositories().maven(repo -> {
+		project.getRepositories().maven((repo) -> {
 			repo.setName(name);
 			if (project.hasProperty("artifactoryUsername")) {
-				repo.credentials(credentials -> {
+				repo.credentials((credentials) -> {
 					credentials.setUsername(Objects.requireNonNull(project.findProperty("artifactoryUsername")).toString());
 					credentials.setPassword(Objects.requireNonNull(project.findProperty("artifactoryPassword")).toString());
 				});

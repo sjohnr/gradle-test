@@ -30,12 +30,12 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 public class SpringPublishAllJavaComponentsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().withType(MavenPublishPlugin.class, mavenPublish -> {
+		project.getPlugins().withType(MavenPublishPlugin.class, (mavenPublish) -> {
 			PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-			publishing.getPublications().create("mavenJava", MavenPublication.class, maven -> {
-				project.getPlugins().withType(JavaPlugin.class, plugin ->
+			publishing.getPublications().create("mavenJava", MavenPublication.class, (maven) -> {
+				project.getPlugins().withType(JavaPlugin.class, (plugin) ->
 						maven.from(project.getComponents().getByName("java")));
-				project.getPlugins().withType(JavaPlatformPlugin.class, plugin ->
+				project.getPlugins().withType(JavaPlatformPlugin.class, (plugin) ->
 						maven.from(project.getComponents().getByName("javaPlatform")));
 			});
 		});

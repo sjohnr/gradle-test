@@ -32,8 +32,6 @@ class SpringDeployDocsPlugin implements Plugin<Project> {
 				role 'docs'
 				if (project.hasProperty('deployDocsHost')) {
 					host = project.findProperty('deployDocsHost')
-				} else {
-					host = 'docs.af.pivotal.io'
 				}
 				retryCount = 5 // retry 5 times (default is 0)
 				retryWaitSec = 10 // wait 10 seconds between retries (default is 0)

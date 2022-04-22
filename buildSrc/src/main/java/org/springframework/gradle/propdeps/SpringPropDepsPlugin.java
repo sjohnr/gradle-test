@@ -23,7 +23,6 @@ import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.javadoc.Javadoc;
-
 import org.springframework.gradle.management.SpringManagementConfigurationPlugin;
 
 /**
@@ -52,7 +51,7 @@ import org.springframework.gradle.management.SpringManagementConfigurationPlugin
 public class SpringPropDepsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
+		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
 			Configuration provided = addConfiguration(project, "provided");
 			Configuration optional = addConfiguration(project, "optional");
 
@@ -64,13 +63,13 @@ public class SpringPropDepsPlugin implements Plugin<Project> {
 	private Configuration addConfiguration(Project project, String name) {
 		Configuration configuration = project.getConfigurations().create(name);
 		configuration.extendsFrom(project.getConfigurations().getByName("implementation"));
-		project.getPlugins().withType(JavaLibraryPlugin.class, javaLibraryPlugin ->
+		project.getPlugins().withType(JavaLibraryPlugin.class, (javaLibraryPlugin) ->
 				configuration.extendsFrom(project.getConfigurations().getByName("api")));
-		project.getPlugins().withType(SpringManagementConfigurationPlugin.class, springManagementConfigurationPlugin ->
+		project.getPlugins().withType(SpringManagementConfigurationPlugin.class, (springManagementConfigurationPlugin) ->
 				configuration.extendsFrom(project.getConfigurations().getByName("management")));
 
 		JavaPluginExtension java = project.getExtensions().getByType(JavaPluginExtension.class);
-		java.getSourceSets().all(sourceSet -> {
+		java.getSourceSets().all((sourceSet) -> {
 			sourceSet.setCompileClasspath(sourceSet.getCompileClasspath().plus(configuration));
 			sourceSet.setRuntimeClasspath(sourceSet.getRuntimeClasspath().plus(configuration));
 		});

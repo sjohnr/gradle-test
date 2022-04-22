@@ -16,9 +16,6 @@
 
 package org.springframework.gradle;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
@@ -32,7 +29,6 @@ import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.jvm.tasks.Jar;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper;
-
 import org.springframework.gradle.checkstyle.SpringJavaCheckstylePlugin;
 import org.springframework.gradle.docs.SpringJavadocOptionsPlugin;
 import org.springframework.gradle.jacoco.SpringJacocoPlugin;
@@ -41,6 +37,9 @@ import org.springframework.gradle.maven.SpringRepositoryPlugin;
 import org.springframework.gradle.propdeps.SpringPropDepsEclipsePlugin;
 import org.springframework.gradle.propdeps.SpringPropDepsIdeaPlugin;
 import org.springframework.gradle.properties.SpringCopyPropertiesPlugin;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Steve Riesenberg
@@ -77,12 +76,13 @@ public class SpringJavaPlugin implements Plugin<Project> {
 		java.setTargetCompatibility(JavaVersion.VERSION_11);
 
 		// Configure Java tasks
-		project.getTasks().withType(JavaCompile.class, javaCompile -> {
+		project.getTasks().withType(JavaCompile.class, (javaCompile) -> {
 			CompileOptions options = javaCompile.getOptions();
 			options.setEncoding("UTF-8");
 			options.getCompilerArgs().add("-parameters");
+			options.getRelease().set(11);
 		});
-		project.getTasks().withType(Jar.class, jar -> jar.manifest(manifest -> {
+		project.getTasks().withType(Jar.class, (jar) -> jar.manifest((manifest) -> {
 			Map<String, String> attributes = new HashMap<>();
 			attributes.put("Created-By", String.format("%s (%s)", System.getProperty("java.version"), System.getProperty("java.specification.vendor")));
 			attributes.put("Implementation-Title", project.getName());

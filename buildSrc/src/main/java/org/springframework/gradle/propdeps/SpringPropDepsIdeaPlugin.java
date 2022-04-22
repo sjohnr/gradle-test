@@ -40,7 +40,7 @@ public class SpringPropDepsIdeaPlugin implements Plugin<Project> {
 		pluginManager.apply(IdeaPlugin.class);
 
 		IdeaModel ideaModel = project.getExtensions().getByType(IdeaModel.class);
-		ideaModel.module(idea -> {
+		ideaModel.module((idea) -> {
 			// IDEA internally deals with 4 scopes : COMPILE, TEST, PROVIDED, RUNTIME
 			// but only PROVIDED seems to be picked up
 			idea.getScopes().get("PROVIDED").get("plus").add(project.getConfigurations().getByName("provided"));

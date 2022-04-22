@@ -27,7 +27,7 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions;
 public class SpringJavadocOptionsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
-		project.getTasks().withType(Javadoc.class, javadoc -> {
+		project.getTasks().withType(Javadoc.class, (javadoc) -> {
 			StandardJavadocDocletOptions options = (StandardJavadocDocletOptions) javadoc.getOptions();
 			options.addStringOption("Xdoclint:none", "-quiet");
 		});

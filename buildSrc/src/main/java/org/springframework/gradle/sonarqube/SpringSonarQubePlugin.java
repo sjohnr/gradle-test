@@ -20,7 +20,6 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.sonarqube.gradle.SonarQubeExtension;
 import org.sonarqube.gradle.SonarQubePlugin;
-
 import org.springframework.gradle.ProjectUtils;
 
 /**
@@ -34,7 +33,7 @@ public class SpringSonarQubePlugin implements Plugin<Project> {
 
 		// Configure sonarqube
 		SonarQubeExtension sonarqube = project.getExtensions().getByType(SonarQubeExtension.class);
-		sonarqube.properties(properties -> {
+		sonarqube.properties((properties) -> {
 			String projectName = ProjectUtils.getProjectName(project);
 			properties.property("sonar.java.coveragePlugin", "jacoco");
 			properties.property("sonar.projectName", projectName);

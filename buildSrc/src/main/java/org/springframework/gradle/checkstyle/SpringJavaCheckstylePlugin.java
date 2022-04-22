@@ -16,14 +16,16 @@
 
 package org.springframework.gradle.checkstyle;
 
-import java.io.File;
-import java.util.Objects;
-
+import io.spring.javaformat.gradle.tasks.CheckFormat;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
+
+import javax.annotation.Nullable;
+import java.io.File;
+import java.util.Objects;
 
 /**
  * Adds and configures Checkstyle plugin.
@@ -39,10 +41,11 @@ public class SpringJavaCheckstylePlugin implements Plugin<Project> {
 	private static final String DEFAULT_NOHTTP_CHECKSTYLE_VERSION = "0.0.10";
 	private static final String CHECKSTYLE_TOOL_VERSION_PROPERTY = "checkstyleToolVersion";
 	private static final String DEFAULT_CHECKSTYLE_TOOL_VERSION = "8.34";
+	private static final String SPRING_JAVAFORMAT_EXCLUDE_PACKAGES_PROPERTY = "springJavaformatExcludePackages";
 
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
+		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
 			File checkstyleDir = project.getRootProject().file(CHECKSTYLE_DIR);
 			if (checkstyleDir.exists() && checkstyleDir.isDirectory()) {
 				project.getPluginManager().apply(CheckstylePlugin.class);
@@ -57,6 +60,15 @@ public class SpringJavaCheckstylePlugin implements Plugin<Project> {
 				// NOTE: See gradle.properties#checkstyleToolVersion for actual version number
 				checkstyle.setToolVersion(getCheckstyleToolVersion(project));
 			}
+
+			// Configure checkFormat task
+			project.getTasks().withType(CheckFormat.class, (checkFormat) -> {
+				// NOTE: See gradle.properties#springJavaformatExcludePackages for excluded packages
+				String[] springJavaformatExcludePackages = getSpringJavaformatExcludePackages(project);
+				if (springJavaformatExcludePackages != null) {
+					checkFormat.exclude(springJavaformatExcludePackages);
+				}
+			});
 		});
 	}
 
@@ -82,5 +94,11 @@ public class SpringJavaCheckstylePlugin implements Plugin<Project> {
 			checkstyleToolVersion = Objects.requireNonNull(project.findProperty(CHECKSTYLE_TOOL_VERSION_PROPERTY)).toString();
 		}
 		return checkstyleToolVersion;
+	}
+
+	@Nullable
+	private String[] getSpringJavaformatExcludePackages(Project project) {
+		String springJavaformatExcludePackages = (String) project.findProperty(SPRING_JAVAFORMAT_EXCLUDE_PACKAGES_PROPERTY);
+		return (springJavaformatExcludePackages != null) ? springJavaformatExcludePackages.split(" ") : null;
 	}
 }

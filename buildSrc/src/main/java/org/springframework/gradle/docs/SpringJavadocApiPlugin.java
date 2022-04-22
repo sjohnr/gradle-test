@@ -16,23 +16,19 @@
 
 package org.springframework.gradle.docs;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import io.spring.gradle.convention.SpringModulePlugin;
-import org.gradle.api.Action;
-import org.gradle.api.JavaVersion;
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
-import org.gradle.api.Task;
+import org.gradle.api.*;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * @author Rob Winch
@@ -45,7 +41,7 @@ public class SpringJavadocApiPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		// Create task to generate aggregated docs
-		Javadoc api = project.getTasks().create("api", Javadoc.class, javadoc -> {
+		Javadoc api = project.getTasks().create("api", Javadoc.class, (javadoc) -> {
 			javadoc.setGroup("Documentation");
 			javadoc.setDescription("Generates aggregated Javadoc API documentation.");
 		});
@@ -55,7 +51,7 @@ public class SpringJavadocApiPlugin implements Plugin<Project> {
 			@Override
 			public void execute(Task task) {
 				if (JavaVersion.current().isJava11Compatible()) {
-					project.copy(copy -> copy.from(api.getDestinationDir())
+					project.copy((copy) -> copy.from(api.getDestinationDir())
 							.into(api.getDestinationDir())
 							.include("element-list")
 							.rename("element-list", "package-list"));
@@ -94,14 +90,14 @@ public class SpringJavadocApiPlugin implements Plugin<Project> {
 			}
 		}
 		logger.info("Try add sources for {}", project);
-		project.getPlugins().withType(SpringModulePlugin.class).all(plugin -> {
+		project.getPlugins().withType(SpringModulePlugin.class, (plugin) -> {
 			logger.info("Added sources for {}", project);
 
 			JavaPluginExtension java = project.getExtensions().getByType(JavaPluginExtension.class);
 			SourceSet mainSourceSet = java.getSourceSets().getByName("main");
 
 			api.setSource(api.getSource().plus(mainSourceSet.getAllJava()));
-			project.getTasks().withType(Javadoc.class).all(projectJavadoc ->
+			project.getTasks().withType(Javadoc.class).all((projectJavadoc) ->
 					api.setClasspath(api.getClasspath().plus(projectJavadoc.getClasspath())));
 		});
 	}

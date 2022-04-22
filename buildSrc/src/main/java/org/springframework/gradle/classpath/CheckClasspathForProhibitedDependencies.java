@@ -16,10 +16,6 @@
 
 package org.springframework.gradle.classpath;
 
-import java.io.IOException;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Task;
@@ -29,6 +25,10 @@ import org.gradle.api.artifacts.ResolvedConfiguration;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.TaskAction;
+
+import java.io.IOException;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * A {@link Task} for checking the classpath for prohibited dependencies.
@@ -40,7 +40,7 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 	private Configuration classpath;
 
 	public CheckClasspathForProhibitedDependencies() {
-		getOutputs().upToDateWhen(task -> true);
+		getOutputs().upToDateWhen((task) -> true);
 	}
 
 	public void setClasspath(Configuration classpath) {
@@ -56,8 +56,8 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 	public void checkForProhibitedDependencies() throws IOException {
 		ResolvedConfiguration resolvedConfiguration = this.classpath.getResolvedConfiguration();
 		TreeSet<String> prohibited = resolvedConfiguration.getResolvedArtifacts().stream()
-				.map(artifact -> artifact.getModuleVersion().getId()).filter(this::prohibited)
-				.map(id -> id.getGroup() + ":" + id.getName()).collect(Collectors.toCollection(TreeSet::new));
+				.map((artifact) -> artifact.getModuleVersion().getId()).filter(this::prohibited)
+				.map((id) -> id.getGroup() + ":" + id.getName()).collect(Collectors.toCollection(TreeSet::new));
 		if (!prohibited.isEmpty()) {
 			StringBuilder message = new StringBuilder(String.format("Found prohibited dependencies in '%s':%n", this.classpath.getName()));
 			for (String dependency : prohibited) {

@@ -30,11 +30,11 @@ public class SpringCheckProhibitedDependenciesLifecyclePlugin implements Plugin<
 
 	@Override
 	public void apply(Project project) {
-		TaskProvider<Task> checkProhibitedDependencies = project.getTasks().register(SpringCheckProhibitedDependenciesLifecyclePlugin.CHECK_PROHIBITED_DEPENDENCIES_TASK_NAME, task -> {
+		TaskProvider<Task> checkProhibitedDependencies = project.getTasks().register(SpringCheckProhibitedDependenciesLifecyclePlugin.CHECK_PROHIBITED_DEPENDENCIES_TASK_NAME, (task) -> {
 			task.setGroup(JavaBasePlugin.VERIFICATION_GROUP);
 			task.setDescription("Checks both the compile/runtime classpath of every SourceSet for prohibited dependencies");
 		});
-		project.getTasks().named(JavaBasePlugin.CHECK_TASK_NAME, checkTask -> {
+		project.getTasks().named(JavaBasePlugin.CHECK_TASK_NAME, (checkTask) -> {
 			checkTask.dependsOn(checkProhibitedDependencies);
 		});
 	}

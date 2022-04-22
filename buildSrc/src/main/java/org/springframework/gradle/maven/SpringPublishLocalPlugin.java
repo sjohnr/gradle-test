@@ -16,12 +16,12 @@
 
 package org.springframework.gradle.maven;
 
-import java.io.File;
-
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
+
+import java.io.File;
 
 /**
  * @author Steve Riesenberg
@@ -29,9 +29,9 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 public class SpringPublishLocalPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().withType(MavenPublishPlugin.class).all(mavenPublish -> {
+		project.getPlugins().withType(MavenPublishPlugin.class, (mavenPublish) -> {
 			PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-			publishing.getRepositories().maven(maven -> {
+			publishing.getRepositories().maven((maven) -> {
 				maven.setName("local");
 				maven.setUrl(new File(project.getRootProject().getBuildDir(), "publications/repos"));
 			});

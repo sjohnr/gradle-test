@@ -16,13 +16,13 @@
 
 package org.springframework.gradle.jacoco;
 
-import java.util.Objects;
-
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.testing.jacoco.plugins.JacocoPlugin;
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension;
+
+import java.util.Objects;
 
 /**
  * Adds a version of jacoco to use and makes check depend on jacocoTestReport.
@@ -36,7 +36,7 @@ public class SpringJacocoPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
+		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
 			project.getPluginManager().apply(JacocoPlugin.class);
 			project.getTasks().getByName("check").dependsOn(project.getTasks().getByName("jacocoTestReport"));
 

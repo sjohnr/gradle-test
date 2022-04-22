@@ -39,7 +39,7 @@ public class SpringPropDepsEclipsePlugin implements Plugin<Project> {
 		pluginManager.apply(EclipseWtpPlugin.class);
 
 		EclipseModel eclipseModel = project.getExtensions().getByType(EclipseModel.class);
-		eclipseModel.classpath(classpath -> {
+		eclipseModel.classpath((classpath) -> {
 			classpath.getPlusConfigurations().add(project.getConfigurations().getByName("provided"));
 			classpath.getPlusConfigurations().add(project.getConfigurations().getByName("optional"));
 		});
