@@ -16,11 +16,11 @@
 
 package org.springframework.support;
 
-import org.springframework.util.Assert;
-
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
+
+import org.springframework.util.Assert;
 
 /**
  * A specification for a release train.
@@ -70,13 +70,13 @@ public final class SpringReleaseTrainSpec {
 	public enum WeekOfMonth {
 		FIRST(0), SECOND(7), THIRD(14), FOURTH(21);
 
-		private final int dayOffset;
+		private final Integer dayOffset;
 
 		WeekOfMonth(int dayOffset) {
 			this.dayOffset = dayOffset;
 		}
 
-		public int getDayOffset() {
+		public Integer getDayOffset() {
 			return dayOffset;
 		}
 	}
@@ -113,6 +113,15 @@ public final class SpringReleaseTrainSpec {
 		private Builder() {
 		}
 
+		public Builder train(int train) {
+			switch (train) {
+				case 1: this.train = Train.ONE; break;
+				case 2: this.train = Train.TWO; break;
+				default: throw new IllegalArgumentException("Invalid train: " + train);
+			}
+			return this;
+		}
+
 		public Builder train(Train train) {
 			this.train = train;
 			return this;
@@ -146,8 +155,31 @@ public final class SpringReleaseTrainSpec {
 			return this;
 		}
 
+		public Builder weekOfMonth(int weekOfMonth) {
+			switch (weekOfMonth) {
+				case 1: this.weekOfMonth = WeekOfMonth.FIRST; break;
+				case 2: this.weekOfMonth = WeekOfMonth.SECOND; break;
+				case 3: this.weekOfMonth = WeekOfMonth.THIRD; break;
+				case 4: this.weekOfMonth = WeekOfMonth.FOURTH; break;
+				default: throw new IllegalArgumentException("Invalid weekOfMonth: " + weekOfMonth);
+			}
+			return this;
+		}
+
 		public Builder weekOfMonth(WeekOfMonth weekOfMonth) {
 			this.weekOfMonth = weekOfMonth;
+			return this;
+		}
+
+		public Builder dayOfWeek(int dayOfWeek) {
+			switch (dayOfWeek) {
+				case 1: this.dayOfWeek = DayOfWeek.MONDAY; break;
+				case 2: this.dayOfWeek = DayOfWeek.TUESDAY; break;
+				case 3: this.dayOfWeek = DayOfWeek.WEDNESDAY; break;
+				case 4: this.dayOfWeek = DayOfWeek.THURSDAY; break;
+				case 5: this.dayOfWeek = DayOfWeek.FRIDAY; break;
+				default: throw new IllegalArgumentException("Invalid dayOfWeek: " + dayOfWeek);
+			}
 			return this;
 		}
 

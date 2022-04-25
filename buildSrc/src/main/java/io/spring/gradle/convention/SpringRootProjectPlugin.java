@@ -24,6 +24,7 @@ import org.gradle.api.plugins.PluginManager;
 import org.springframework.gradle.classpath.SpringCheckProhibitedDependenciesLifecyclePlugin;
 import org.springframework.gradle.maven.SpringNexusPlugin;
 import org.springframework.gradle.nohttp.SpringNoHttpPlugin;
+import org.springframework.gradle.release.SpringReleasePlugin;
 import org.springframework.gradle.sonarqube.SpringSonarQubePlugin;
 
 /**
@@ -39,6 +40,7 @@ public class SpringRootProjectPlugin implements Plugin<Project> {
 		pluginManager.apply(SpringNexusPlugin.class);
 		pluginManager.apply(SpringCheckProhibitedDependenciesLifecyclePlugin.class);
 		pluginManager.apply(SpringSonarQubePlugin.class);
+		pluginManager.apply(SpringReleasePlugin.class);
 
 		// Apply default repositories
 		project.getRepositories().mavenCentral();

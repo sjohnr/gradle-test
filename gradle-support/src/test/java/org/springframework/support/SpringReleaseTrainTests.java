@@ -16,14 +16,13 @@
 
 package org.springframework.support;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.support.SpringReleaseTrainSpec.DayOfWeek;
-import org.springframework.support.SpringReleaseTrainSpec.Train;
-import org.springframework.support.SpringReleaseTrainSpec.WeekOfMonth;
-
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+
+import org.springframework.support.SpringReleaseTrainSpec.Train;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,8 +36,8 @@ public class SpringReleaseTrainTests {
 				SpringReleaseTrainSpec.builder()
 						.nextTrain(LocalDate.of(2019, 12, 31))
 						.version("1.0.0")
-						.weekOfMonth(WeekOfMonth.SECOND)
-						.dayOfWeek(DayOfWeek.TUESDAY)
+						.weekOfMonth(2)
+						.dayOfWeek(2)
 						.build();
 
 		assertThat(releaseTrainSpec.getTrain()).isEqualTo(Train.ONE);
@@ -50,8 +49,8 @@ public class SpringReleaseTrainTests {
 				SpringReleaseTrainSpec.builder()
 						.nextTrain(LocalDate.of(2020, 6, 30))
 						.version("1.0.0")
-						.weekOfMonth(WeekOfMonth.SECOND)
-						.dayOfWeek(DayOfWeek.TUESDAY)
+						.weekOfMonth(2)
+						.dayOfWeek(2)
 						.build();
 
 		assertThat(releaseTrainSpec.getTrain()).isEqualTo(Train.TWO);
@@ -62,10 +61,10 @@ public class SpringReleaseTrainTests {
 	public void getTrainDatesWhenTrainOneIsSecondTuesdayOf2020ThenSuccess() {
 		SpringReleaseTrainSpec releaseTrainSpec =
 				SpringReleaseTrainSpec.builder()
-						.train(Train.ONE)
+						.train(1)
 						.version("1.0.0")
-						.weekOfMonth(WeekOfMonth.SECOND)
-						.dayOfWeek(DayOfWeek.TUESDAY)
+						.weekOfMonth(2)
+						.dayOfWeek(2)
 						.year(2020)
 						.build();
 
@@ -83,10 +82,10 @@ public class SpringReleaseTrainTests {
 	public void getTrainDatesWhenTrainTwoIsSecondTuesdayOf2020ThenSuccess() {
 		SpringReleaseTrainSpec releaseTrainSpec =
 				SpringReleaseTrainSpec.builder()
-						.train(Train.TWO)
+						.train(2)
 						.version("1.0.0")
-						.weekOfMonth(WeekOfMonth.SECOND)
-						.dayOfWeek(DayOfWeek.TUESDAY)
+						.weekOfMonth(2)
+						.dayOfWeek(2)
 						.year(2020)
 						.build();
 
@@ -104,10 +103,10 @@ public class SpringReleaseTrainTests {
 	public void getTrainDatesWhenTrainOneIsSecondTuesdayOf2022ThenSuccess() {
 		SpringReleaseTrainSpec releaseTrainSpec =
 				SpringReleaseTrainSpec.builder()
-						.train(Train.ONE)
+						.train(1)
 						.version("1.0.0")
-						.weekOfMonth(WeekOfMonth.SECOND)
-						.dayOfWeek(DayOfWeek.TUESDAY)
+						.weekOfMonth(2)
+						.dayOfWeek(2)
 						.year(2022)
 						.build();
 
@@ -125,10 +124,10 @@ public class SpringReleaseTrainTests {
 	public void getTrainDatesWhenTrainTwoIsSecondTuesdayOf2022ThenSuccess() {
 		SpringReleaseTrainSpec releaseTrainSpec =
 				SpringReleaseTrainSpec.builder()
-						.train(Train.TWO)
+						.train(2)
 						.version("1.0.0")
-						.weekOfMonth(WeekOfMonth.SECOND)
-						.dayOfWeek(DayOfWeek.TUESDAY)
+						.weekOfMonth(2)
+						.dayOfWeek(2)
 						.year(2022)
 						.build();
 
@@ -146,10 +145,10 @@ public class SpringReleaseTrainTests {
 	public void getTrainDatesWhenTrainOneIsThirdMondayOf2022ThenSuccess() {
 		SpringReleaseTrainSpec releaseTrainSpec =
 				SpringReleaseTrainSpec.builder()
-						.train(Train.ONE)
+						.train(1)
 						.version("1.0.0")
-						.weekOfMonth(WeekOfMonth.THIRD)
-						.dayOfWeek(DayOfWeek.MONDAY)
+						.weekOfMonth(3)
+						.dayOfWeek(1)
 						.year(2022)
 						.build();
 
@@ -167,10 +166,10 @@ public class SpringReleaseTrainTests {
 	public void getTrainDatesWhenTrainTwoIsThirdMondayOf2022ThenSuccess() {
 		SpringReleaseTrainSpec releaseTrainSpec =
 				SpringReleaseTrainSpec.builder()
-						.train(Train.TWO)
+						.train(2)
 						.version("1.0.0")
-						.weekOfMonth(WeekOfMonth.THIRD)
-						.dayOfWeek(DayOfWeek.MONDAY)
+						.weekOfMonth(3)
+						.dayOfWeek(1)
 						.year(2022)
 						.build();
 
@@ -188,10 +187,10 @@ public class SpringReleaseTrainTests {
 	public void isTrainDateWhenTrainOneIsThirdMondayOf2022ThenSuccess() {
 		SpringReleaseTrainSpec releaseTrainSpec =
 				SpringReleaseTrainSpec.builder()
-						.train(Train.ONE)
+						.train(1)
 						.version("1.0.0")
-						.weekOfMonth(WeekOfMonth.THIRD)
-						.dayOfWeek(DayOfWeek.MONDAY)
+						.weekOfMonth(3)
+						.dayOfWeek(1)
 						.year(2022)
 						.build();
 

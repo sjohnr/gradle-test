@@ -9,6 +9,7 @@ sourceCompatibility = JavaVersion.VERSION_11
 repositories {
     gradlePluginPortal()
     mavenCentral()
+    mavenLocal()
     maven { url "https://repo.spring.io/plugins-release/" }
 }
 
@@ -24,6 +25,8 @@ dependencies {
     implementation "org.jfrog.buildinfo:build-info-extractor-gradle:4.26.1"
     implementation "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7.1"
     implementation "org.springframework:spring-core:5.3.17"
+
+    implementation "com.example:gradle-support:0.0.1-SNAPSHOT"
 
     testImplementation platform("org.junit:junit-bom:5.8.2")
     testImplementation "org.junit.jupiter:junit-jupiter-api"

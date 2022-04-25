@@ -16,26 +16,33 @@
 
 package com.github.api;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 import java.io.IOException;
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class GitHubMilestoneApi {
 	private String baseUrl = "https://api.github.com";
 
 	private final OkHttpClient client;
 
-	private final Gson gson = new Gson();
+	private final Gson gson = new GsonBuilder()
+			.registerTypeAdapter(LocalDate.class, new LocalDateAdapter().nullSafe())
+			.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter().nullSafe())
+			.create();
 
 	public GitHubMilestoneApi() {
 		this.client = new OkHttpClient.Builder().build();
@@ -52,26 +59,30 @@ public class GitHubMilestoneApi {
 	}
 
 	public long findMilestoneNumberByTitle(RepositoryRef repositoryRef, String milestoneTitle) {
+		List<Milestone> milestones = this.getMilestones(repositoryRef);
+		for (Milestone milestone : milestones) {
+			if (milestoneTitle.equals(milestone.getTitle())) {
+				return milestone.getNumber();
+			}
+		}
+		if (milestones.size() <= 100) {
+			throw new RuntimeException("Could not find open milestone with title " + milestoneTitle + " for repository " + repositoryRef + " Got " + milestones);
+		}
+		throw new RuntimeException("It is possible there are too many open milestones (only 100 are supported). Could not find open milestone with title " + milestoneTitle + " for repository " + repositoryRef + " Got " + milestones);
+	}
+
+	public List<Milestone> getMilestones(RepositoryRef repositoryRef) {
 		String url = this.baseUrl + "/repos/" + repositoryRef.getOwner() + "/" + repositoryRef.getName() + "/milestones?per_page=100";
 		Request request = new Request.Builder().get().url(url)
 				.build();
 		try {
 			Response response = this.client.newCall(request).execute();
 			if (!response.isSuccessful()) {
-				throw new RuntimeException("Could not find milestone with title " + milestoneTitle + " for repository " + repositoryRef + ". Response " + response);
+				throw new RuntimeException("Could not retrieve milestones for repository " + repositoryRef + ". Response " + response);
 			}
-			List<Milestone> milestones = this.gson.fromJson(response.body().charStream(), new TypeToken<List<Milestone>>(){}.getType());
-			for (Milestone milestone : milestones) {
-				if (milestoneTitle.equals(milestone.getTitle())) {
-					return milestone.getNumber();
-				}
-			}
-			if (milestones.size() <= 100) {
-				throw new RuntimeException("Could not find open milestone with title " + milestoneTitle + " for repository " + repositoryRef + " Got " + milestones);
-			}
-			throw new RuntimeException("It is possible there are too many open milestones open (only 100 are supported). Could not find open milestone with title " + milestoneTitle + " for repository " + repositoryRef + " Got " + milestones);
+			return this.gson.fromJson(response.body().charStream(), new TypeToken<List<Milestone>>(){}.getType());
 		} catch (IOException e) {
-			throw new RuntimeException("Could not find open milestone with title " + milestoneTitle + " for repository " + repositoryRef, e);
+			throw new RuntimeException("Could not retrieve milestones for repository " + repositoryRef, e);
 		}
 	}
 
@@ -113,8 +124,8 @@ public class GitHubMilestoneApi {
 					}.getType());
 			for (Milestone milestone : milestones) {
 				if (milestoneTitle.equals(milestone.getTitle())) {
-					Instant now = Instant.now();
-					return milestone.getDueOn() != null && now.isAfter(milestone.getDueOn().toInstant());
+					LocalDateTime now = LocalDateTime.now();
+					return milestone.getDueOn() != null && now.isAfter(milestone.getDueOn());
 				}
 			}
 			if (milestones.size() <= 100) {
@@ -210,6 +221,29 @@ public class GitHubMilestoneApi {
 		}
 		catch (IOException e) {
 			throw new RuntimeException("Could not find open milestones with for repository " + repositoryRef, e);
+		}
+	}
+
+	/**
+	 * Create a milestone.
+	 *
+	 * @param repository The repository owner/name
+	 * @param milestone The milestone containing a title and due date
+	 */
+	public void createMilestone(RepositoryRef repository, Milestone milestone) {
+		String url = this.baseUrl + "/repos/" + repository.getOwner() + "/" + repository.getName() + "/milestones";
+		String json = this.gson.toJson(milestone);
+		RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
+		Request request = new Request.Builder().url(url).post(body).build();
+		try {
+			Response response = this.client.newCall(request).execute();
+			if (!response.isSuccessful()) {
+				throw new RuntimeException(String.format("Could not create milestone %s for repository %s/%s. Got response %s",
+						milestone.getTitle(), repository.getOwner(), repository.getName(), response));
+			}
+		} catch (IOException ex) {
+			throw new RuntimeException(String.format("Could not create release %s for repository %s/%s",
+					milestone.getTitle(), repository.getOwner(), repository.getName()), ex);
 		}
 	}
 

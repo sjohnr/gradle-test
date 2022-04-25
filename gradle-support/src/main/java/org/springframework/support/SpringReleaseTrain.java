@@ -84,7 +84,7 @@ public final class SpringReleaseTrain {
 		releaseDates.put(this.releaseTrainSpec.getVersion() + suffix, releaseDate);
 	}
 
-	private LocalDate calculateTrainDate(Year year, Month month, DayOfWeek dayOfWeek, int dayOffset) {
+	private LocalDate calculateTrainDate(Year year, Month month, DayOfWeek dayOfWeek, Integer dayOffset) {
 		LocalDate firstDayOfMonth = year.atMonth(month).atDay(1);
 		int dayOfWeekOffset = dayOfWeek.getValue() - firstDayOfMonth.getDayOfWeek().getValue();
 		if (dayOfWeekOffset < 0) {

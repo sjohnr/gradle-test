@@ -16,17 +16,17 @@
 
 package com.github.api;
 
-import com.google.gson.annotations.SerializedName;
+import java.time.LocalDateTime;
 
-import java.util.Date;
+import com.google.gson.annotations.SerializedName;
 
 public class Milestone {
 	private String title;
 
-	private long number;
+	private Long number;
 
 	@SerializedName("due_on")
-	private Date dueOn;
+	private LocalDateTime dueOn;
 
 	public String getTitle() {
 		return title;
@@ -36,19 +36,19 @@ public class Milestone {
 		this.title = title;
 	}
 
-	public long getNumber() {
+	public Long getNumber() {
 		return number;
 	}
 
-	public void setNumber(long number) {
+	public void setNumber(Long number) {
 		this.number = number;
 	}
 
-	public Date getDueOn() {
+	public LocalDateTime getDueOn() {
 		return dueOn;
 	}
 
-	public void setDueOn(Date dueOn) {
+	public void setDueOn(LocalDateTime dueOn) {
 		this.dueOn = dueOn;
 	}
 
@@ -57,7 +57,7 @@ public class Milestone {
 		return "Milestone{" +
 				"title='" + title + '\'' +
 				", number='" + number + '\'' +
-				", dueOn='" + dueOn +
+				", dueOn='" + dueOn + '\'' +
 				'}';
 	}
 }

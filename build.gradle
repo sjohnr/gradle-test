@@ -5,6 +5,17 @@ plugins {
 group = "com.example"
 description = "Gradle Test"
 
+springRelease {
+    repository {
+        owner = "sjohnr"
+        name = "release-test"
+    }
+    releaseTrain {
+        weekOfMonth = 3
+        dayOfWeek = 1
+    }
+}
+
 if (hasProperty("buildScan")) {
     buildScan {
         termsOfServiceUrl = "https://gradle.com/terms-of-service"
