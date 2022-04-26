@@ -40,5 +40,14 @@ public class SpringReleasePlugin implements Plugin<Project> {
 			scheduleReleaseTrain.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
 			scheduleReleaseTrain.setVersion((String) project.findProperty("nextVersion"));
 		});
+
+		project.getTasks().register("triggerRelease", TriggerReleaseTask.class, (triggerRelease) -> {
+			triggerRelease.setGroup("Release");
+			triggerRelease.setDescription("Create a workflow_dispatch event to trigger a release on a given branch");
+
+			triggerRelease.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
+			triggerRelease.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
+			triggerRelease.setBranch((String) project.findProperty("branch"));
+		});
 	}
 }
