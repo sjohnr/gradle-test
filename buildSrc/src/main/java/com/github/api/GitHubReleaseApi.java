@@ -16,6 +16,8 @@
 
 package com.github.api;
 
+import java.io.IOException;
+
 import com.google.gson.Gson;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -23,8 +25,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import java.io.IOException;
 
 /**
  * Manage GitHub releases.

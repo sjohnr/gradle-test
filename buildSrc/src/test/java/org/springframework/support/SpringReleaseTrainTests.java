@@ -43,6 +43,7 @@ public class SpringReleaseTrainTests {
 		assertThat(releaseTrainSpec.getTrain()).isEqualTo(Train.ONE);
 		assertThat(releaseTrainSpec.getYear()).isEqualTo(Year.of(2020));
 	}
+
 	@Test
 	public void nextTrainWhenMiddleOf2020ThenReturnsTrainTwoOf2020() {
 		SpringReleaseTrainSpec releaseTrainSpec =
