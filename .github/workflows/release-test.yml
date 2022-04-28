@@ -53,6 +53,7 @@ jobs:
           nextVersion=$(./gradlew -q getNextReleaseMilestone -PgitHubAccessToken=$TOKEN)
           hasNoOpenIssues=$(./gradlew -q checkMilestoneHasNoOpenIssues -PnextVersion=$nextVersion -PgitHubAccessToken=$TOKEN)
           isDueToday=$(./gradlew -q checkIsMilestoneDueToday -PnextVersion=$nextVersion -PgitHubAccessToken=$TOKEN)
+          echo "$version -> $nextVersion: hasNoOpenIssues=$hasNoOpenIssues, isDueToday=$isDueToday"
           echo "::set-output name=version::$version"
           echo "::set-output name=next_version::$nextVersion"
           echo "::set-output name=has_no_open_issues::$hasNoOpenIssues"
