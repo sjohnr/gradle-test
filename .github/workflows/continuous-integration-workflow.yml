@@ -19,7 +19,7 @@ jobs:
   prerequisites:
     name: Pre-requisites for building
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'sjohnr/release-test' }}
+    if: ${{ github.repository == 'sjohnr/gradle-test' }}
     outputs:
       runjobs: ${{ steps.continue.outputs.runjobs }}
       project_version: ${{ steps.continue.outputs.project_version }}
