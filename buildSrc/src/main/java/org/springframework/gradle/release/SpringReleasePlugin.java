@@ -17,6 +17,7 @@
 package org.springframework.gradle.release;
 
 import com.github.api.RepositoryRef;
+import groovy.lang.MissingPropertyException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
@@ -26,6 +27,9 @@ import org.gradle.api.Project;
 public class SpringReleasePlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
+		// Apply additional plugins
+		project.getPluginManager().apply(GitHubChangelogPlugin.class);
+
 		SpringReleaseExtension releaseSettings = project.getExtensions().create("springRelease", SpringReleaseExtension.class);
 		SpringReleaseExtension.Repository repository = releaseSettings.getRepository();
 		SpringReleaseExtension.ReleaseTrain releaseTrain = releaseSettings.getReleaseTrain();
@@ -83,6 +87,23 @@ public class SpringReleasePlugin implements Plugin<Project> {
 			checkIsMilestoneDueToday.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
 			checkIsMilestoneDueToday.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
 			checkIsMilestoneDueToday.setVersion((String) project.findProperty("nextVersion"));
+		});
+
+		project.getTasks().register("createGitHubRelease", CreateGitHubReleaseTask.class, (createGitHubRelease) -> {
+			createGitHubRelease.setGroup("Release");
+			createGitHubRelease.setDescription("Create a github release");
+			createGitHubRelease.dependsOn("generateChangelog");
+
+			createGitHubRelease.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
+			createGitHubRelease.setCreateRelease("true".equals(project.findProperty("createRelease")));
+			createGitHubRelease.setVersion((String) project.findProperty("nextVersion"));
+			if (project.hasProperty("branch")) {
+				createGitHubRelease.setBranch((String) project.findProperty("branch"));
+			}
+			createGitHubRelease.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
+			if (createGitHubRelease.isCreateRelease() && createGitHubRelease.getGitHubAccessToken() == null) {
+				throw new MissingPropertyException("Please provide an access token with -PgitHubAccessToken=...");
+			}
 		});
 	}
 }

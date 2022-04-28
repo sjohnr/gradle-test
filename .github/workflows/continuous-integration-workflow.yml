@@ -1,0 +1,146 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - '**'
+  schedule:
+    - cron: '0 10 * * *' # Once per day at 10am UTC
+  workflow_dispatch:
+
+env:
+  DEPLOY_ARTIFACTS: false
+  DEPLOY_DOCS: false
+  GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
+  GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
+  GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
+
+jobs:
+  prerequisites:
+    name: Pre-requisites for building
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'sjohnr/release-test' }}
+    outputs:
+      runjobs: ${{ steps.continue.outputs.runjobs }}
+      project_version: ${{ steps.continue.outputs.project_version }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: continue
+        name: Determine if should continue
+        run: |
+          # Run jobs if in upstream repository
+          echo "Setting runjobs=true"
+          echo "::set-output name=runjobs::true"
+          # Extract version from gradle.properties
+          version=$(cat gradle.properties | grep "version=" | awk -F'=' '{print $2}')
+          echo "Setting project_version=$version"
+          echo "::set-output name=project_version::$version"
+  build:
+    name: Build
+    needs: [prerequisites]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        jdk: [17]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    if: ${{ needs.prerequisites.outputs.runjobs }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: sjohnr/spring-gradle-build-action@v1
+        with:
+          java-version: ${{ matrix.jdk }}
+          task: 'clean build'
+          args: '--continue -PartifactoryUsername="${{ secrets.ARTIFACTORY_USERNAME }}" -PartifactoryPassword="${{ secrets.ARTIFACTORY_PASSWORD }}"'
+  test:
+    name: Test against snapshots
+    needs: [prerequisites]
+    runs-on: ubuntu-latest
+    if: ${{ needs.prerequisites.outputs.runjobs }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: sjohnr/spring-gradle-build-action@v1
+        with:
+          java-version: '17'
+          task: 'test'
+          args: '--refresh-dependencies -Duser.name=spring-builds+github -PartifactoryUsername="${{ secrets.ARTIFACTORY_USERNAME }}" -PartifactoryPassword="${{ secrets.ARTIFACTORY_PASSWORD }}" -PforceMavenRepositories=snapshot -PspringFrameworkVersion="5.3.+" -PspringSecurityVersion="5.5.+" --stacktrace'
+  deploy_artifacts:
+    name: Deploy artifacts
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: sjohnr/spring-gradle-build-action@v1
+        if: ${{ env.DEPLOY_ARTIFACTS == 'true' }}
+        with:
+          java-version: '17'
+          task: 'publishArtifacts finalizeDeployArtifacts'
+          args: '-PossrhUsername="${{ secrets.OSSRH_TOKEN_USERNAME }}" -PossrhPassword="${{ secrets.OSSRH_TOKEN_PASSWORD }}" -PartifactoryUsername="${{ secrets.ARTIFACTORY_USERNAME }}" -PartifactoryPassword="${{ secrets.ARTIFACTORY_PASSWORD }}" -PsigningKey="${{ secrets.GPG_PRIVATE_KEY }}" -PsigningPassword="${{ secrets.GPG_PASSPHRASE }}" --stacktrace'
+  deploy_docs:
+    name: Deploy docs
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: sjohnr/spring-gradle-build-action@v1
+        if: ${{ env.DEPLOY_DOCS == 'true' }}
+        with:
+          java-version: '17'
+          task: 'deployDocs'
+          args: '-PdeployDocsSshKey="${{ secrets.DOCS_SSH_KEY }}" -PdeployDocsSshUsername="${{ secrets.DOCS_USERNAME }}" -PdeployDocsHost="${{ secrets.DOCS_HOST }}" --stacktrace'
+  release:
+    name: Perform release
+    needs: [prerequisites, deploy_artifacts, deploy_docs]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    if: ${{ !endsWith(needs.prerequisites.outputs.project_version, '-SNAPSHOT') }}
+    env:
+      REPO: ${{ github.repository }}
+      BRANCH: ${{ github.ref_name }}
+      VERSION: ${{ needs.prerequisites.outputs.project_version }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
+      - name: Wait for Artifactory artifacts
+        if: ${{ contains(needs.prerequisites.outputs.project_version, '-RC') || contains(needs.prerequisites.outputs.project_version, '-M') }}
+        run: |
+          echo "Wait for artifacts of $REPO@$VERSION to appear on Artifactory."
+          until curl -f -s https://repo.spring.io/artifactory/milestone/org/springframework/security/spring-security-core/$VERSION/ > /dev/null
+          do
+            sleep 30
+            echo "."
+          done
+          echo "Artifacts for $REPO@$VERSION have been released to Artifactory."
+      - name: Wait for Maven Central artifacts
+        if: ${{ !contains(needs.prerequisites.outputs.project_version, '-RC') && !contains(needs.prerequisites.outputs.project_version, '-M') }}
+        run: |
+          echo "Wait for artifacts of $REPO@$VERSION to appear on Maven Central."
+          until curl -f -s https://repo1.maven.org/maven2/org/springframework/security/spring-security-core/$VERSION/ > /dev/null
+          do
+            sleep 30
+            echo "."
+          done
+          echo "Artifacts for $REPO@$VERSION have been released to Maven Central."
+      - name: Create GitHub release
+        uses: sjohnr/spring-gradle-build-action@v1
+        with:
+          java-version: '17'
+          task: 'createGitHubRelease'
+          args: '-PnextVersion="${{ needs.prerequisites.outputs.project_version }}" -Pbranch="${{ github.ref_name }}" -PcreateRelease=true -PgitHubAccessToken="${{ github.token }}"'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Update to next snapshot version
+        run: |
+          version=${{ needs.prerequisites.outputs.project_version }}
+          updatedVersion=$(./gradlew -q getNextSnapshotVersion)
+          sed -i "s/version=$version/version=$updatedVersion/" gradle.properties
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -am "Next development version"
+          git push

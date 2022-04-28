@@ -1,0 +1,48 @@
+name: Release Scheduler
+
+on:
+  schedule:
+    - cron: '45 16 * * MON'
+  workflow_dispatch:
+
+env:
+  PERFORM_SCHEDULED_RELEASES: false
+
+jobs:
+  prerequisites:
+    name: Pre-requisites for building
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'sjohnr/gradle-test' }}
+    outputs:
+      runjobs: ${{ steps.continue.outputs.runjobs }}
+    steps:
+      - id: continue
+        name: Determine if should continue
+        if: ${{ env.RUN_JOBS }}
+        run: |
+          # Run jobs if in upstream repository
+          echo "Setting runjobs=true"
+          echo "::set-output name=runjobs::true"
+  perform_scheduled_releases:
+    name: Perform scheduled releases
+    needs: [prerequisites]
+    runs-on: ubuntu-latest
+    if: ${{ needs.prerequisites.outputs.runjobs }}
+    env:
+      TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Trigger release workflows
+        if: ${{ env.PERFORM_SCHEDULED_RELEASES == 'true' }}
+        run: |
+          ./gradlew triggerRelease -Pbranch=main -PgitHubAccessToken=$TOKEN && \
+            ./gradlew triggerRelease -Pbranch=5.7.x -PgitHubAccessToken=$TOKEN && \
+            ./gradlew triggerRelease -Pbranch=5.6.x -PgitHubAccessToken=$TOKEN && \
+            ./gradlew triggerRelease -Pbranch=5.5.x -PgitHubAccessToken=$TOKEN
