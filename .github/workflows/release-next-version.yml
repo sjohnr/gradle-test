@@ -55,12 +55,6 @@ jobs:
           nextVersion=${{ steps.calculate-next-version.outputs.next_version }}
           isDueToday=$(./gradlew -q checkIsMilestoneDueToday -PnextVersion=$nextVersion -PgitHubAccessToken=$TOKEN)
           echo "::set-output name=is_due_today::$isDueToday"
-      - id: validate-release-state
-        name: Validate state of release
-        if: ${{ steps.check-release-due.outputs.is_due_today == 'true' && steps.check-open-issues.outputs.has_no_open_issues == 'false' }}
-        run: |
-          echo "The release is due today but there are open issues"
-          exit 1
       - id: check-open-issues
         name: Check for open issues
         if: ${{ steps.check-release-due.outputs.is_due_today == 'true' }}
@@ -68,6 +62,12 @@ jobs:
           nextVersion=${{ steps.calculate-next-version.outputs.next_version }}
           hasNoOpenIssues=$(./gradlew -q checkMilestoneHasNoOpenIssues -PnextVersion=$nextVersion -PgitHubAccessToken=$TOKEN)
           echo "::set-output name=has_no_open_issues::$hasNoOpenIssues"
+      - id: validate-release-state
+        name: Validate state of release
+        if: ${{ steps.check-release-due.outputs.is_due_today == 'true' && steps.check-open-issues.outputs.has_no_open_issues == 'false' }}
+        run: |
+          echo "The release is due today but there are open issues"
+          exit 1
       - id: update-version-and-push
         name: Update version and push
         if: ${{ steps.check-release-due.outputs.is_due_today == 'true' && steps.check-open-issues.outputs.has_no_open_issues == 'true' }}
