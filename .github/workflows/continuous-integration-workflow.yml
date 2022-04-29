@@ -14,6 +14,15 @@ env:
   GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
   GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
   GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
+  GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+  GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+  OSSRH_TOKEN_USERNAME: ${{ secrets.OSSRH_S01_TOKEN_USERNAME }}
+  OSSRH_TOKEN_PASSWORD: ${{ secrets.OSSRH_S01_TOKEN_PASSWORD }}
+  ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+  ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+  DOCS_USERNAME: ${{ secrets.DOCS_USERNAME }}
+  DOCS_SSH_KEY: ${{ secrets.DOCS_SSH_KEY }}
+  DOCS_HOST: ${{ secrets.DOCS_HOST }}
 
 jobs:
   prerequisites:
@@ -51,7 +60,7 @@ jobs:
         with:
           java-version: ${{ matrix.jdk }}
           task: 'clean build'
-          args: '--continue -PartifactoryUsername="${{ secrets.ARTIFACTORY_USERNAME }}" -PartifactoryPassword="${{ secrets.ARTIFACTORY_PASSWORD }}"'
+          args: '--continue -PartifactoryUsername="$ARTIFACTORY_USERNAME" -PartifactoryPassword="$ARTIFACTORY_PASSWORD"'
   test:
     name: Test against snapshots
     needs: [prerequisites]
@@ -63,7 +72,7 @@ jobs:
         with:
           java-version: '17'
           task: 'test'
-          args: '--refresh-dependencies -PartifactoryUsername="${{ secrets.ARTIFACTORY_USERNAME }}" -PartifactoryPassword="${{ secrets.ARTIFACTORY_PASSWORD }}" -PforceMavenRepositories=snapshot -PspringFrameworkVersion="5.3.+" -PspringSecurityVersion="5.5.+" --stacktrace'
+          args: '--refresh-dependencies -PartifactoryUsername="$ARTIFACTORY_USERNAME" -PartifactoryPassword="$ARTIFACTORY_PASSWORD" -PforceMavenRepositories=snapshot -PspringFrameworkVersion="5.3.+" -PspringSecurityVersion="5.5.+" --stacktrace'
   deploy_artifacts:
     name: Deploy artifacts
     needs: [build, test]
@@ -75,7 +84,7 @@ jobs:
         with:
           java-version: '17'
           task: 'publishArtifacts finalizeDeployArtifacts'
-          args: '-PossrhUsername="${{ secrets.OSSRH_TOKEN_USERNAME }}" -PossrhPassword="${{ secrets.OSSRH_TOKEN_PASSWORD }}" -PartifactoryUsername="${{ secrets.ARTIFACTORY_USERNAME }}" -PartifactoryPassword="${{ secrets.ARTIFACTORY_PASSWORD }}" -PsigningKey="${{ secrets.GPG_PRIVATE_KEY }}" -PsigningPassword="${{ secrets.GPG_PASSPHRASE }}" --stacktrace'
+          args: '--stacktrace -PossrhUsername="$OSSRH_TOKEN_USERNAME" -PossrhPassword="$OSSRH_TOKEN_PASSWORD" -PartifactoryUsername="$ARTIFACTORY_USERNAME" -PartifactoryPassword="$ARTIFACTORY_PASSWORD" -PsigningKey="$GPG_PRIVATE_KEY" -PsigningPassword="$GPG_PASSPHRASE"'
   deploy_docs:
     name: Deploy docs
     needs: [build, test]
@@ -87,7 +96,7 @@ jobs:
         with:
           java-version: '17'
           task: 'deployDocs'
-          args: '-PdeployDocsSshKey="${{ secrets.DOCS_SSH_KEY }}" -PdeployDocsSshUsername="${{ secrets.DOCS_USERNAME }}" -PdeployDocsHost="${{ secrets.DOCS_HOST }}" --stacktrace'
+          args: '--stacktrace -PdeployDocsSshKey="$DOCS_SSH_KEY" -PdeployDocsSshUsername="$DOCS_USERNAME" -PdeployDocsHost="$DOCS_HOST"'
   release:
     name: Perform release
     needs: [prerequisites, deploy_artifacts, deploy_docs]
