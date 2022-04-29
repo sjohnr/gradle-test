@@ -127,7 +127,7 @@ jobs:
         with:
           java-version: '17'
           task: 'createGitHubRelease'
-          args: '-PnextVersion="${{ needs.prerequisites.outputs.project_version }}" -Pbranch="${{ github.ref_name }}" -PcreateRelease=true -PgitHubAccessToken="${{ github.token }}"'
+          args: '-PnextVersion=${{ needs.prerequisites.outputs.project_version }} -Pbranch=${{ github.ref_name }} -PcreateRelease=true -PgitHubAccessToken=${{ github.token }}'
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
