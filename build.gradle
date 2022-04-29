@@ -8,7 +8,7 @@ description = "Gradle Test"
 springRelease {
     repository {
         owner = "sjohnr"
-        name = "release-test"
+        name = "gradle-test"
     }
     releaseTrain {
         weekOfMonth = 3

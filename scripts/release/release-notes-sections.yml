@@ -1,5 +1,5 @@
 changelog:
-  repository: sjohnr/release-test
+  repository: sjohnr/gradle-test
   sections:
     - title: ":rewind: Breaking Changes"
       labels: ["type: breaks-passivity"]
