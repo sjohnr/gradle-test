@@ -63,7 +63,7 @@ jobs:
         with:
           java-version: '17'
           task: 'test'
-          args: '--refresh-dependencies -Duser.name=spring-builds+github -PartifactoryUsername="${{ secrets.ARTIFACTORY_USERNAME }}" -PartifactoryPassword="${{ secrets.ARTIFACTORY_PASSWORD }}" -PforceMavenRepositories=snapshot -PspringFrameworkVersion="5.3.+" -PspringSecurityVersion="5.5.+" --stacktrace'
+          args: '--refresh-dependencies -PartifactoryUsername="${{ secrets.ARTIFACTORY_USERNAME }}" -PartifactoryPassword="${{ secrets.ARTIFACTORY_PASSWORD }}" -PforceMavenRepositories=snapshot -PspringFrameworkVersion="5.3.+" -PspringSecurityVersion="5.5.+" --stacktrace'
   deploy_artifacts:
     name: Deploy artifacts
     needs: [build, test]
