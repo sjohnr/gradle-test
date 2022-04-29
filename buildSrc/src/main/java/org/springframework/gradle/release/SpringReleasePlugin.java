@@ -35,6 +35,7 @@ public class SpringReleasePlugin implements Plugin<Project> {
 		SpringReleaseExtension.ReleaseTrain releaseTrain = releaseSettings.getReleaseTrain();
 
 		project.getTasks().register("scheduleReleaseTrain", ScheduleReleaseTrainTask.class, (scheduleReleaseTrain) -> {
+			scheduleReleaseTrain.doNotTrackState("API call to GitHub needs to check for new milestones every time");
 			scheduleReleaseTrain.setGroup("Release");
 			scheduleReleaseTrain.setDescription("Schedule the next release train as a series of milestones starting in January or July");
 
@@ -90,6 +91,7 @@ public class SpringReleasePlugin implements Plugin<Project> {
 		});
 
 		project.getTasks().register("createGitHubRelease", CreateGitHubReleaseTask.class, (createGitHubRelease) -> {
+			createGitHubRelease.doNotTrackState("API call to GitHub needs to check for new issues and create a release every time");
 			createGitHubRelease.setGroup("Release");
 			createGitHubRelease.setDescription("Create a github release");
 			createGitHubRelease.dependsOn("generateChangelog");
