@@ -30,10 +30,12 @@ public class SpringReleasePlugin implements Plugin<Project> {
 		// Apply additional plugins
 		project.getPluginManager().apply(GitHubChangelogPlugin.class);
 
+		// Register configuration extension
 		SpringReleaseExtension releaseSettings = project.getExtensions().create("springRelease", SpringReleaseExtension.class);
 		SpringReleaseExtension.Repository repository = releaseSettings.getRepository();
 		SpringReleaseExtension.ReleaseTrain releaseTrain = releaseSettings.getReleaseTrain();
 
+		// Register release management tasks
 		project.getTasks().register("scheduleReleaseTrain", ScheduleReleaseTrainTask.class, (scheduleReleaseTrain) -> {
 			scheduleReleaseTrain.doNotTrackState("API call to GitHub needs to check for new milestones every time");
 			scheduleReleaseTrain.setGroup("Release");
