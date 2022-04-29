@@ -106,6 +106,7 @@ jobs:
     env:
       REPO: ${{ github.repository }}
       BRANCH: ${{ github.ref_name }}
+      TOKEN: ${{ github.token }}
       VERSION: ${{ needs.prerequisites.outputs.project_version }}
     steps:
       - uses: actions/checkout@v2
@@ -136,7 +137,7 @@ jobs:
         with:
           java-version: '17'
           task: 'createGitHubRelease'
-          args: '-PnextVersion=${{ needs.prerequisites.outputs.project_version }} -Pbranch=${{ github.ref_name }} -PcreateRelease=true -PgitHubAccessToken=${{ github.token }}'
+          args: '-PnextVersion=$VERSION -Pbranch=$BRANCH -PcreateRelease=true -PgitHubAccessToken=$TOKEN'
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
@@ -146,7 +147,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
       - name: Update to next snapshot version
         run: |
-          version=${{ needs.prerequisites.outputs.project_version }}
+          version=$VERSION
           updatedVersion=$(./gradlew -q getNextSnapshotVersion)
           sed -i "s/version=$version/version=$updatedVersion/" gradle.properties
           git config user.name 'github-actions[bot]'
