@@ -51,46 +51,39 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - uses: sjohnr/spring-gradle-build-action@v1
+      - uses: sjohnr/spring-gradle-build-action@v1-beta
         with:
           java-version: ${{ matrix.jdk }}
-          task: 'clean build'
-          args: '--continue -PartifactoryUsername="$ARTIFACTORY_USERNAME" -PartifactoryPassword="$ARTIFACTORY_PASSWORD"'
+          arguments: 'clean build --continue -PartifactoryUsername="$ARTIFACTORY_USERNAME" -PartifactoryPassword="$ARTIFACTORY_PASSWORD"'
   test:
     name: Test against snapshots
     needs: [prerequisites]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: sjohnr/spring-gradle-build-action@v1
+      - uses: sjohnr/spring-gradle-build-action@v1-beta
         with:
-          java-version: '17'
-          task: 'test'
-          args: '--refresh-dependencies -PartifactoryUsername="$ARTIFACTORY_USERNAME" -PartifactoryPassword="$ARTIFACTORY_PASSWORD" -PforceMavenRepositories=snapshot -PspringFrameworkVersion="5.3.+" -PspringSecurityVersion="5.5.+" --stacktrace'
+          arguments: 'test --refresh-dependencies -PartifactoryUsername="$ARTIFACTORY_USERNAME" -PartifactoryPassword="$ARTIFACTORY_PASSWORD" -PforceMavenRepositories=snapshot -PspringFrameworkVersion="5.3.+" -PspringSecurityVersion="5.5.+" --stacktrace'
   deploy_artifacts:
     name: Deploy artifacts
     needs: [build, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: sjohnr/spring-gradle-build-action@v1
+      - uses: sjohnr/spring-gradle-build-action@v1-beta
         if: ${{ env.DEPLOY_ARTIFACTS == 'true' }}
         with:
-          java-version: '17'
-          task: 'publishArtifacts finalizeDeployArtifacts'
-          args: '--stacktrace -PossrhUsername="$OSSRH_TOKEN_USERNAME" -PossrhPassword="$OSSRH_TOKEN_PASSWORD" -PartifactoryUsername="$ARTIFACTORY_USERNAME" -PartifactoryPassword="$ARTIFACTORY_PASSWORD" -PsigningKey="$GPG_PRIVATE_KEY" -PsigningPassword="$GPG_PASSPHRASE"'
+          arguments: 'publishArtifacts finalizeDeployArtifacts --stacktrace -PossrhUsername="$OSSRH_TOKEN_USERNAME" -PossrhPassword="$OSSRH_TOKEN_PASSWORD" -PartifactoryUsername="$ARTIFACTORY_USERNAME" -PartifactoryPassword="$ARTIFACTORY_PASSWORD" -PsigningKey="$GPG_PRIVATE_KEY" -PsigningPassword="$GPG_PASSPHRASE"'
   deploy_docs:
     name: Deploy docs
     needs: [build, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: sjohnr/spring-gradle-build-action@v1
+      - uses: sjohnr/spring-gradle-build-action@v1-beta
         if: ${{ env.DEPLOY_DOCS == 'true' }}
         with:
-          java-version: '17'
-          task: 'deployDocs'
-          args: '--stacktrace -PdeployDocsSshKey="$DOCS_SSH_KEY" -PdeployDocsSshUsername="$DOCS_USERNAME" -PdeployDocsHost="$DOCS_HOST"'
+          arguments: 'deployDocs --stacktrace -PdeployDocsSshKey="$DOCS_SSH_KEY" -PdeployDocsSshUsername="$DOCS_USERNAME" -PdeployDocsHost="$DOCS_HOST"'
   release:
     name: Perform release
     needs: [prerequisites, deploy_artifacts, deploy_docs]
@@ -106,6 +99,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
+      - uses: sjohnr/spring-gradle-build-action@v1-beta
       - name: Wait for Artifactory artifacts
         if: ${{ contains(needs.prerequisites.outputs.project_version, '-RC') || contains(needs.prerequisites.outputs.project_version, '-M') }}
         run: |
@@ -127,18 +121,9 @@ jobs:
           done
           echo "Artifacts for $REPO@$VERSION have been released to Maven Central."
       - name: Create GitHub release
-        uses: sjohnr/spring-gradle-build-action@v1
+        uses: sjohnr/spring-gradle-build-action@v1-beta
         with:
-          java-version: '17'
-          task: 'createGitHubRelease'
-          args: '-PnextVersion=$VERSION -Pbranch=$BRANCH -PcreateRelease=true -PgitHubAccessToken=$TOKEN'
-      - name: Set up JDK 17
-        uses: actions/setup-java@v2
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+          arguments: 'createGitHubRelease -PnextVersion=$VERSION -Pbranch=$BRANCH -PcreateRelease=true -PgitHubAccessToken=$TOKEN'
       - name: Update to next snapshot version
         run: |
           version=$VERSION
