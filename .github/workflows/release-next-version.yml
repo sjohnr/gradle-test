@@ -36,7 +36,13 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
-      - uses: sjohnr/spring-gradle-build-action@v1-beta
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
       - id: calculate-next-version
         name: Calculate next release version
         run: |
