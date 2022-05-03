@@ -51,7 +51,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - uses: sjohnr/spring-gradle-build-action@v1
+      - uses: sjohnr/spring-gradle-build-action@v1-beta
         with:
           java-version: ${{ matrix.jdk }}
           task: 'clean build'
@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: sjohnr/spring-gradle-build-action@v1
+      - uses: sjohnr/spring-gradle-build-action@v1-beta
         with:
           java-version: '17'
           task: 'test'
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: sjohnr/spring-gradle-build-action@v1
+      - uses: sjohnr/spring-gradle-build-action@v1-beta
         if: ${{ env.DEPLOY_ARTIFACTS == 'true' }}
         with:
           java-version: '17'
@@ -85,7 +85,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: sjohnr/spring-gradle-build-action@v1
+      - uses: sjohnr/spring-gradle-build-action@v1-beta
         if: ${{ env.DEPLOY_DOCS == 'true' }}
         with:
           java-version: '17'
@@ -127,7 +127,7 @@ jobs:
           done
           echo "Artifacts for $REPO@$VERSION have been released to Maven Central."
       - name: Create GitHub release
-        uses: sjohnr/spring-gradle-build-action@v1
+        uses: sjohnr/spring-gradle-build-action@v1-beta
         with:
           java-version: '17'
           task: 'createGitHubRelease'
