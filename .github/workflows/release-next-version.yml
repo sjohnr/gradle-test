@@ -36,13 +36,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
-      - name: Set up JDK 17
-        uses: actions/setup-java@v2
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+      - uses: sjohnr/spring-gradle-build-action@v1
       - id: calculate-next-version
         name: Calculate next release version
         run: |
@@ -54,23 +48,23 @@ jobs:
         run: |
           nextVersion=${{ steps.calculate-next-version.outputs.next_version }}
           isDueToday=$(./gradlew -q checkIsMilestoneDueToday -PnextVersion=$nextVersion -PgitHubAccessToken=$TOKEN)
-          echo "::set-output name=is_due_today::$isDueToday"
+          echo "::set-output name=passed::$isDueToday"
       - id: check-open-issues
         name: Check for open issues
-        if: ${{ steps.check-release-due.outputs.is_due_today == 'true' }}
+        if: ${{ steps.check-release-due.outputs.passed == 'true' }}
         run: |
           nextVersion=${{ steps.calculate-next-version.outputs.next_version }}
           hasNoOpenIssues=$(./gradlew -q checkMilestoneHasNoOpenIssues -PnextVersion=$nextVersion -PgitHubAccessToken=$TOKEN)
-          echo "::set-output name=has_no_open_issues::$hasNoOpenIssues"
+          echo "::set-output name=passed::$hasNoOpenIssues"
       - id: validate-release-state
         name: Validate state of release
-        if: ${{ steps.check-release-due.outputs.is_due_today == 'true' && steps.check-open-issues.outputs.has_no_open_issues == 'false' }}
+        if: ${{ steps.check-release-due.outputs.passed == 'true' && steps.check-open-issues.outputs.passed == 'false' }}
         run: |
           echo "The release is due today but there are open issues"
           exit 1
       - id: update-version-and-push
         name: Update version and push
-        if: ${{ steps.check-release-due.outputs.is_due_today == 'true' && steps.check-open-issues.outputs.has_no_open_issues == 'true' }}
+        if: ${{ steps.check-release-due.outputs.passed == 'true' && steps.check-open-issues.outputs.passed == 'true' }}
         run: |
           version=${{ needs.prerequisites.outputs.project_version }}
           nextVersion=${{ steps.calculate-next-version.outputs.next_version }}

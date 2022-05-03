@@ -25,23 +25,20 @@ jobs:
   perform_scheduled_releases:
     name: Perform scheduled releases
     needs: [prerequisites]
+    strategy:
+      matrix:
+        branch:
+          - 'main'
+          - '5.8.x'
+          - '5.7.x'
+          - '5.6.x'
     runs-on: ubuntu-latest
     if: ${{ needs.prerequisites.outputs.runjobs }}
     env:
       TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 17
-        uses: actions/setup-java@v2
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+      - uses: sjohnr/spring-gradle-build-action@v1
       - name: Trigger release workflows
         if: ${{ env.PERFORM_SCHEDULED_RELEASES == 'true' }}
-        run: |
-          ./gradlew triggerRelease -Pbranch=main -PgitHubAccessToken=$TOKEN && \
-            ./gradlew triggerRelease -Pbranch=5.7.x -PgitHubAccessToken=$TOKEN && \
-            ./gradlew triggerRelease -Pbranch=5.6.x -PgitHubAccessToken=$TOKEN && \
-            ./gradlew triggerRelease -Pbranch=5.5.x -PgitHubAccessToken=$TOKEN
+        run: ./gradlew triggerRelease -Pbranch=${{ matrix.branch }} -PgitHubAccessToken=$TOKEN
