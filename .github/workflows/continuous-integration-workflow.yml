@@ -30,12 +30,16 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'sjohnr/gradle-test' }}
     outputs:
+      runjobs: ${{ steps.continue.outputs.runjobs }}
       project_version: ${{ steps.continue.outputs.project_version }}
     steps:
       - uses: actions/checkout@v2
       - id: continue
         name: Determine if should continue
         run: |
+          # Run jobs if in upstream repository
+          echo "Setting runjobs=true"
+          echo "::set-output name=runjobs::true"
           # Extract version from gradle.properties
           version=$(cat gradle.properties | grep "version=" | awk -F'=' '{print $2}')
           echo "Setting project_version=$version"
