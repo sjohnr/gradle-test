@@ -13,5 +13,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: sjohnr/spring-gradle-build-action@v1-beta
-        with:
-          arguments: test
+      - name: Test Step
+        run: ./gradlew checkstyleNohttp
