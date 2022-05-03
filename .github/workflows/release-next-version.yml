@@ -29,8 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ endsWith(needs.prerequisites.outputs.project_version, '-SNAPSHOT') }}
     env:
-      REPO: ${{ github.repository }}
-      BRANCH: ${{ github.ref_name }}
       TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v2
