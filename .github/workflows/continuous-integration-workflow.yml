@@ -64,7 +64,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: sjohnr/spring-gradle-build-action@v1
       - name: Test against snapshots
-        run: ./gradlew test --refresh-dependencies -PartifactoryUsername="$ARTIFACTORY_USERNAME" -PartifactoryPassword="$ARTIFACTORY_PASSWORD" -PforceMavenRepositories=snapshot -PspringFrameworkVersion="5.3.+" -PspringSecurityVersion="5.5.+" --stacktrace
+        run: ./gradlew test --refresh-dependencies --stacktrace -PartifactoryUsername="$ARTIFACTORY_USERNAME" -PartifactoryPassword="$ARTIFACTORY_PASSWORD" -PforceMavenRepositories=snapshot -PspringFrameworkVersion="5.3.+" -PspringSecurityVersion="5.5.+"
   deploy_artifacts:
     name: Deploy artifacts
     needs: [build, test]
