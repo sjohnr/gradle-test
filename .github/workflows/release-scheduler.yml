@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  PERFORM_SCHEDULED_RELEASES: false
+  PERFORM_SCHEDULED_RELEASES: true
 
 jobs:
   prerequisites:
