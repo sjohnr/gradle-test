@@ -23,10 +23,10 @@ if (hasProperty("buildScan")) {
     }
 }
 
-task printGradleHome {
+task printGradleUserHome {
     doLast {
         println '*****'
-        println System.getenv('GRADLE_HOME')
+        println System.getenv('GRADLE_USER_HOME')
         println '*****'
     }
 }
