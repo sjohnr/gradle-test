@@ -19,7 +19,7 @@ jobs:
           distribution: 'temurin'
       - name: Set up gradle user name
         run: |
-          mkdir -p ~/.gradle
+          mkdir -p .gradle
           echo 'systemProp.user.name=spring-builds+github' >> .gradle/gradle.properties
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1
