@@ -22,3 +22,19 @@ if (hasProperty("buildScan")) {
         termsOfServiceAgree = "yes"
     }
 }
+
+task printGradleHome {
+    doLast {
+        println '*****'
+        println System.getenv('GRADLE_HOME')
+        println '*****'
+    }
+}
+
+task printUserName {
+    doLast {
+        println '*****'
+        println System.getProperty('user.name')
+        println '*****'
+    }
+}
