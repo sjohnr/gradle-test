@@ -18,7 +18,6 @@ jobs:
     steps:
       - id: continue
         name: Determine if should continue
-        if: ${{ env.RUN_JOBS }}
         run: |
           # Run jobs if in upstream repository
           echo "Setting runjobs=true"
