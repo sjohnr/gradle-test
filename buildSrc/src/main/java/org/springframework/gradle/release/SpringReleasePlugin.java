@@ -34,7 +34,6 @@ public class SpringReleasePlugin implements Plugin<Project> {
 		SpringReleaseExtension releaseSettings = project.getExtensions().create("springRelease", SpringReleaseExtension.class);
 		SpringReleaseExtension.Repository repository = releaseSettings.getRepository();
 		SpringReleaseExtension.ReleaseTrain releaseTrain = releaseSettings.getReleaseTrain();
-		RepositoryRef repositoryRef = new RepositoryRef(repository.getOwner(), repository.getName());
 
 		// Register release management tasks
 		project.getTasks().register("scheduleNextRelease", ScheduleNextReleaseTask.class, (scheduleNextRelease) -> {
@@ -42,7 +41,7 @@ public class SpringReleasePlugin implements Plugin<Project> {
 			scheduleNextRelease.setGroup("Release");
 			scheduleNextRelease.setDescription("Schedule the next release (even months only) or release train (series of milestones starting in January or July) based on the current version");
 
-			scheduleNextRelease.setRepository(repositoryRef);
+			scheduleNextRelease.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
 			scheduleNextRelease.setWeekOfMonth(releaseTrain.getWeekOfMonth());
 			scheduleNextRelease.setDayOfWeek(releaseTrain.getDayOfWeek());
 			scheduleNextRelease.setVersion((String) project.findProperty("nextVersion"));
@@ -53,7 +52,7 @@ public class SpringReleasePlugin implements Plugin<Project> {
 			triggerRelease.setGroup("Release");
 			triggerRelease.setDescription("Create a workflow_dispatch event to trigger a release on a given branch");
 
-			triggerRelease.setRepository(repositoryRef);
+			triggerRelease.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
 			triggerRelease.setBranch((String) project.findProperty("branch"));
 			triggerRelease.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
 		});
@@ -63,7 +62,7 @@ public class SpringReleasePlugin implements Plugin<Project> {
 			getNextReleaseMilestone.setGroup("Release");
 			getNextReleaseMilestone.setDescription("Calculates the next release version based on the current version and outputs the version number");
 
-			getNextReleaseMilestone.setRepository(repositoryRef);
+			getNextReleaseMilestone.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
 			getNextReleaseMilestone.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
 		});
 
@@ -78,7 +77,7 @@ public class SpringReleasePlugin implements Plugin<Project> {
 			checkMilestoneHasNoOpenIssues.setGroup("Release");
 			checkMilestoneHasNoOpenIssues.setDescription("Checks if there are any open issues for the specified repository and milestone and outputs true or false");
 
-			checkMilestoneHasNoOpenIssues.setRepository(repositoryRef);
+			checkMilestoneHasNoOpenIssues.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
 			checkMilestoneHasNoOpenIssues.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
 			checkMilestoneHasNoOpenIssues.setVersion((String) project.findProperty("nextVersion"));
 		});
@@ -88,7 +87,7 @@ public class SpringReleasePlugin implements Plugin<Project> {
 			checkIsMilestoneDueToday.setGroup("Release");
 			checkIsMilestoneDueToday.setDescription("Checks if the given version is due today or past due and outputs true or false");
 
-			checkIsMilestoneDueToday.setRepository(repositoryRef);
+			checkIsMilestoneDueToday.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
 			checkIsMilestoneDueToday.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
 			checkIsMilestoneDueToday.setVersion((String) project.findProperty("nextVersion"));
 		});
@@ -99,7 +98,7 @@ public class SpringReleasePlugin implements Plugin<Project> {
 			createGitHubRelease.setDescription("Create a github release");
 			createGitHubRelease.dependsOn("generateChangelog");
 
-			createGitHubRelease.setRepository(repositoryRef);
+			createGitHubRelease.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
 			createGitHubRelease.setCreateRelease("true".equals(project.findProperty("createRelease")));
 			createGitHubRelease.setVersion((String) project.findProperty("nextVersion"));
 			if (project.hasProperty("branch")) {
