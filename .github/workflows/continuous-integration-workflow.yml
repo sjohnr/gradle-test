@@ -136,3 +136,21 @@ jobs:
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git commit -am "Next development version"
           git push
+  post_release:
+    name: Perform post-release
+    needs: [prerequisites, deploy_artifacts, deploy_docs]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    if: ${{ endsWith(needs.prerequisites.outputs.project_version, '-SNAPSHOT') }}
+    env:
+      REPO: ${{ github.repository }}
+      BRANCH: ${{ github.ref_name }}
+      TOKEN: ${{ github.token }}
+      VERSION: ${{ needs.prerequisites.outputs.project_version }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
+      - uses: sjohnr/spring-gradle-build-action@v1
+      - name: Schedule next release
+        run: ./gradlew scheduleNextRelease -PnextVersion=$VERSION -PgitHubAccessToken=$TOKEN
