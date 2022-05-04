@@ -124,8 +124,8 @@ public class GitHubMilestoneApi {
 					}.getType());
 			for (Milestone milestone : milestones) {
 				if (milestoneTitle.equals(milestone.getTitle())) {
-					LocalDateTime now = LocalDateTime.now();
-					return milestone.getDueOn() != null && now.isAfter(milestone.getDueOn());
+					LocalDate today = LocalDate.now();
+					return milestone.getDueOn() != null && today.compareTo(milestone.getDueOn().toLocalDate()) >= 0;
 				}
 			}
 			if (milestones.size() <= 100) {

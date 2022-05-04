@@ -60,6 +60,7 @@ public class ScheduleNextReleaseTask extends DefaultTask {
 
 		// Check to see if a scheduled GA version already exists
 		boolean hasExistingMilestone = gitHubMilestoneApi.getMilestones(this.repository).stream()
+				.peek(m -> System.out.println(m.getDueOn()))
 				.anyMatch(milestone -> nextReleaseMilestone.equals(milestone.getTitle()));
 		if (hasExistingMilestone) {
 			return;
