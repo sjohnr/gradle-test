@@ -208,9 +208,7 @@ public class GitHubMilestoneApi {
 						Pattern preReleasePattern = Pattern.compile("^.*-([A-Z]+)([0-9]+)$");
 						Matcher matcher1 = preReleasePattern.matcher(m1);
 						Matcher matcher2 = preReleasePattern.matcher(m2);
-						matcher1.find();
-						matcher2.find();
-						if (!matcher1.group(1).equals(matcher2.group(1))) {
+						if (!matcher1.find() || !matcher2.find() || !matcher1.group(1).equals(matcher2.group(1))) {
 							return m1.compareTo(m2);
 						}
 						else {

@@ -18,7 +18,6 @@ package org.springframework.gradle.release;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Map;
 
 import com.github.api.GitHubMilestoneApi;
 import com.github.api.Milestone;
@@ -33,7 +32,7 @@ import org.springframework.support.SpringReleaseTrainSpec;
 /**
  * @author Steve Riesenberg
  */
-public class ScheduleReleaseTrainTask extends DefaultTask {
+public class ScheduleNextReleaseTask extends DefaultTask {
 	@Input
 	private RepositoryRef repository = new RepositoryRef();
 
@@ -50,14 +49,28 @@ public class ScheduleReleaseTrainTask extends DefaultTask {
 	private Integer dayOfWeek;
 
 	@TaskAction
-	public void scheduleReleaseTrain() {
+	public void scheduleNextRelease() {
 		GitHubMilestoneApi gitHubMilestoneApi = new GitHubMilestoneApi(this.gitHubAccessToken);
-		boolean hasExistingMilestone = gitHubMilestoneApi.getMilestones(this.repository).stream()
-				.anyMatch(milestone -> this.version.equals(milestone.getTitle()));
+		String nextReleaseMilestone = gitHubMilestoneApi.getNextReleaseMilestone(this.repository, this.version);
 
-		if (!hasExistingMilestone) {
-			// Create M1, M2, M3, RC1 and GA milestones
-			getReleaseTrainDates().forEach((milestoneTitle, dueOn) -> {
+		// If the next release contains a dash (e.g. 5.6.0-RC1), it is already scheduled
+		if (nextReleaseMilestone.contains("-")) {
+			return;
+		}
+
+		// Check to see if a scheduled GA version already exists
+		boolean hasExistingMilestone = gitHubMilestoneApi.getMilestones(this.repository).stream()
+				.anyMatch(milestone -> nextReleaseMilestone.equals(milestone.getTitle()));
+		if (hasExistingMilestone) {
+			return;
+		}
+
+		// Next milestone is either a patch version or minor version
+		// Note: Major versions will be handled like minor and get a release
+		// train which can be manually updated to match the desired schedule.
+		if (nextReleaseMilestone.endsWith(".0")) {
+			// Create M1, M2, M3, RC1 and GA milestones for release train
+			getReleaseTrain(nextReleaseMilestone).getTrainDates().forEach((milestoneTitle, dueOn) -> {
 				Milestone milestone = new Milestone();
 				milestone.setTitle(milestoneTitle);
 				// Note: GitHub seems to store full date/time as UTC then displays
@@ -68,21 +81,27 @@ public class ScheduleReleaseTrainTask extends DefaultTask {
 				milestone.setDueOn(dueOn.atTime(LocalTime.NOON));
 				gitHubMilestoneApi.createMilestone(this.repository, milestone);
 			});
+		} else {
+			// Create GA milestone for patch release on the next even month
+			LocalDate startDate = LocalDate.now();
+			LocalDate dueOn = getReleaseTrain(nextReleaseMilestone).getNextReleaseDate(startDate);
+			Milestone milestone = new Milestone();
+			milestone.setTitle(nextReleaseMilestone);
+			milestone.setDueOn(dueOn.atTime(LocalTime.NOON));
+			gitHubMilestoneApi.createMilestone(this.repository, milestone);
 		}
 	}
 
-	private Map<String, LocalDate> getReleaseTrainDates() {
+	private SpringReleaseTrain getReleaseTrain(String nextReleaseMilestone) {
 		SpringReleaseTrainSpec releaseTrainSpec =
 				SpringReleaseTrainSpec.builder()
 						.nextTrain()
-						.version(this.version)
+						.version(nextReleaseMilestone)
 						.weekOfMonth(this.weekOfMonth)
 						.dayOfWeek(this.dayOfWeek)
 						.build();
-		SpringReleaseTrain springReleaseTrain =
-				new SpringReleaseTrain(releaseTrainSpec);
 
-		return springReleaseTrain.getTrainDates();
+		return new SpringReleaseTrain(releaseTrainSpec);
 	}
 
 	public RepositoryRef getRepository() {
