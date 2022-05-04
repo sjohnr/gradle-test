@@ -82,14 +82,14 @@ public class SpringReleasePlugin implements Plugin<Project> {
 			checkMilestoneHasNoOpenIssues.setVersion((String) project.findProperty("nextVersion"));
 		});
 
-		project.getTasks().register("checkIsMilestoneDueToday", CheckIsMilestoneDueToday.class, (checkIsMilestoneDueToday) -> {
-			checkIsMilestoneDueToday.doNotTrackState("API call to GitHub needs to check the milestone due date every time");
-			checkIsMilestoneDueToday.setGroup("Release");
-			checkIsMilestoneDueToday.setDescription("Checks if the given version is due today or past due and outputs true or false");
+		project.getTasks().register("checkMilestoneIsDueToday", CheckMilestoneIsDueToday.class, (checkMilestoneIsDueToday) -> {
+			checkMilestoneIsDueToday.doNotTrackState("API call to GitHub needs to check the milestone due date every time");
+			checkMilestoneIsDueToday.setGroup("Release");
+			checkMilestoneIsDueToday.setDescription("Checks if the given version is due today or past due and outputs true or false");
 
-			checkIsMilestoneDueToday.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
-			checkIsMilestoneDueToday.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
-			checkIsMilestoneDueToday.setVersion((String) project.findProperty("nextVersion"));
+			checkMilestoneIsDueToday.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
+			checkMilestoneIsDueToday.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
+			checkMilestoneIsDueToday.setVersion((String) project.findProperty("nextVersion"));
 		});
 
 		project.getTasks().register("createGitHubRelease", CreateGitHubReleaseTask.class, (createGitHubRelease) -> {

@@ -45,7 +45,7 @@ jobs:
         name: Check release due
         run: |
           nextVersion=${{ steps.calculate-next-version.outputs.next_version }}
-          isDueToday=$(./gradlew -q checkIsMilestoneDueToday -PnextVersion=$nextVersion -PgitHubAccessToken=$TOKEN)
+          isDueToday=$(./gradlew -q checkMilestoneIsDueToday -PnextVersion=$nextVersion -PgitHubAccessToken=$TOKEN)
           echo "::set-output name=passed::$isDueToday"
       - id: check-open-issues
         name: Check for open issues
