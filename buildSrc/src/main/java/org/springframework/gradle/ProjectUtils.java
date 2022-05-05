@@ -16,6 +16,7 @@
 
 package org.springframework.gradle;
 
+import groovy.lang.MissingPropertyException;
 import org.gradle.api.Project;
 
 /**
@@ -49,5 +50,24 @@ public class ProjectUtils {
 
 	private static String projectVersion(Project project) {
 		return String.valueOf(project.getVersion());
+	}
+
+	public static String findProperty(Project project, String propertyName) {
+		String propertyValue = null;
+		if (project.hasProperty(propertyName)) {
+			propertyValue = (String) project.findProperty(propertyName);
+		}
+		if (propertyValue == null) {
+			throw new MissingPropertyException(propertyName + " is a required property. Provide a value with -P" + propertyName + "=...");
+		}
+		return propertyValue;
+	}
+
+	public static boolean findProperty(Project project, String propertyName, boolean defaultValue) {
+		String propertyValue = String.valueOf(defaultValue);
+		if (project.hasProperty(propertyName)) {
+			propertyValue = (String) project.findProperty(propertyName);
+		}
+		return Boolean.parseBoolean(propertyValue);
 	}
 }

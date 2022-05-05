@@ -12,6 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: sjohnr/spring-gradle-build-action@v1-beta
+      - uses: spring-io/spring-gradle-build-action@v1-beta
       - name: Run Test
         run: ./gradlew checkstyleNohttp
