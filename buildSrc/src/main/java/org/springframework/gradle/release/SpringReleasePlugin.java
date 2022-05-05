@@ -36,16 +36,16 @@ public class SpringReleasePlugin implements Plugin<Project> {
 		SpringReleaseExtension.ReleaseTrain releaseTrain = releaseSettings.getReleaseTrain();
 
 		// Register release management tasks
-		project.getTasks().register("scheduleReleaseTrain", ScheduleReleaseTrainTask.class, (scheduleReleaseTrain) -> {
-			scheduleReleaseTrain.doNotTrackState("API call to GitHub needs to check for new milestones every time");
-			scheduleReleaseTrain.setGroup("Release");
-			scheduleReleaseTrain.setDescription("Schedule the next release train as a series of milestones starting in January or July");
+		project.getTasks().register("scheduleNextRelease", ScheduleNextReleaseTask.class, (scheduleNextRelease) -> {
+			scheduleNextRelease.doNotTrackState("API call to GitHub needs to check for new milestones every time");
+			scheduleNextRelease.setGroup("Release");
+			scheduleNextRelease.setDescription("Schedule the next release (even months only) or release train (series of milestones starting in January or July) based on the current version");
 
-			scheduleReleaseTrain.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
-			scheduleReleaseTrain.setWeekOfMonth(releaseTrain.getWeekOfMonth());
-			scheduleReleaseTrain.setDayOfWeek(releaseTrain.getDayOfWeek());
-			scheduleReleaseTrain.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
-			scheduleReleaseTrain.setVersion((String) project.findProperty("nextVersion"));
+			scheduleNextRelease.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
+			scheduleNextRelease.setWeekOfMonth(releaseTrain.getWeekOfMonth());
+			scheduleNextRelease.setDayOfWeek(releaseTrain.getDayOfWeek());
+			scheduleNextRelease.setVersion((String) project.findProperty("nextVersion"));
+			scheduleNextRelease.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
 		});
 
 		project.getTasks().register("triggerRelease", TriggerReleaseTask.class, (triggerRelease) -> {
@@ -53,8 +53,8 @@ public class SpringReleasePlugin implements Plugin<Project> {
 			triggerRelease.setDescription("Create a workflow_dispatch event to trigger a release on a given branch");
 
 			triggerRelease.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
-			triggerRelease.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
 			triggerRelease.setBranch((String) project.findProperty("branch"));
+			triggerRelease.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
 		});
 
 		project.getTasks().register("getNextReleaseMilestone", GetNextReleaseMilestoneTask.class, (getNextReleaseMilestone) -> {
@@ -82,14 +82,14 @@ public class SpringReleasePlugin implements Plugin<Project> {
 			checkMilestoneHasNoOpenIssues.setVersion((String) project.findProperty("nextVersion"));
 		});
 
-		project.getTasks().register("checkIsMilestoneDueToday", CheckIsMilestoneDueToday.class, (checkIsMilestoneDueToday) -> {
-			checkIsMilestoneDueToday.doNotTrackState("API call to GitHub needs to check the milestone due date every time");
-			checkIsMilestoneDueToday.setGroup("Release");
-			checkIsMilestoneDueToday.setDescription("Checks if the given version is due today or past due and outputs true or false");
+		project.getTasks().register("checkMilestoneIsDueToday", CheckMilestoneIsDueToday.class, (checkMilestoneIsDueToday) -> {
+			checkMilestoneIsDueToday.doNotTrackState("API call to GitHub needs to check the milestone due date every time");
+			checkMilestoneIsDueToday.setGroup("Release");
+			checkMilestoneIsDueToday.setDescription("Checks if the given version is due today or past due and outputs true or false");
 
-			checkIsMilestoneDueToday.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
-			checkIsMilestoneDueToday.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
-			checkIsMilestoneDueToday.setVersion((String) project.findProperty("nextVersion"));
+			checkMilestoneIsDueToday.setRepository(new RepositoryRef(repository.getOwner(), repository.getName()));
+			checkMilestoneIsDueToday.setGitHubAccessToken((String) project.findProperty("gitHubAccessToken"));
+			checkMilestoneIsDueToday.setVersion((String) project.findProperty("nextVersion"));
 		});
 
 		project.getTasks().register("createGitHubRelease", CreateGitHubReleaseTask.class, (createGitHubRelease) -> {
