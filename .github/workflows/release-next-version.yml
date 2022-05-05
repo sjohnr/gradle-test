@@ -29,14 +29,12 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ endsWith(needs.prerequisites.outputs.project_version, '-SNAPSHOT') }}
     env:
-      REPO: ${{ github.repository }}
-      BRANCH: ${{ github.ref_name }}
       TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
-      - uses: sjohnr/spring-gradle-build-action@v1
+      - uses: spring-io/spring-gradle-build-action@v1
       - id: calculate-next-version
         name: Calculate next release version
         run: |
@@ -47,7 +45,7 @@ jobs:
         name: Check release due
         run: |
           nextVersion=${{ steps.calculate-next-version.outputs.next_version }}
-          isDueToday=$(./gradlew -q checkIsMilestoneDueToday -PnextVersion=$nextVersion -PgitHubAccessToken=$TOKEN)
+          isDueToday=$(./gradlew -q checkMilestoneIsDueToday -PnextVersion=$nextVersion -PgitHubAccessToken=$TOKEN)
           echo "::set-output name=passed::$isDueToday"
       - id: check-open-issues
         name: Check for open issues

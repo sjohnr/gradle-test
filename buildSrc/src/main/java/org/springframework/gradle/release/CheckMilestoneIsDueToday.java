@@ -25,7 +25,7 @@ import org.gradle.api.tasks.TaskAction;
 /**
  * @author Steve Riesenberg
  */
-public class CheckIsMilestoneDueToday extends DefaultTask {
+public class CheckMilestoneIsDueToday extends DefaultTask {
 	@Input
 	private RepositoryRef repository = new RepositoryRef();
 
@@ -36,7 +36,7 @@ public class CheckIsMilestoneDueToday extends DefaultTask {
 	private String version;
 
 	@TaskAction
-	public void checkIsMilestoneDueToday() {
+	public void checkMilestoneIsDueToday() {
 		GitHubMilestoneApi gitHubMilestoneApi = new GitHubMilestoneApi(this.gitHubAccessToken);
 		boolean milestoneDueToday = gitHubMilestoneApi.isMilestoneDueToday(this.repository, this.version);
 		System.out.println(milestoneDueToday);

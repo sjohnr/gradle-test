@@ -21,6 +21,8 @@ import java.time.Year;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import org.springframework.support.SpringReleaseTrainSpec.Train;
 
@@ -30,32 +32,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Steve Riesenberg
  */
 public class SpringReleaseTrainTests {
-	@Test
-	public void nextTrainWhenEndOf2019ThenReturnsTrainOneOf2020() {
+	@ParameterizedTest
+	@CsvSource({
+			"2019-12-31, ONE, 2020",
+			"2020-01-01, ONE, 2020",
+			"2020-01-31, ONE, 2020",
+			"2020-02-01, TWO, 2020",
+			"2020-07-31, TWO, 2020",
+			"2020-08-01, ONE, 2021"
+	})
+	public void nextTrainWhenBoundaryConditionsThenSuccess(LocalDate startDate, Train expectedTrain, Year expectedYear) {
 		SpringReleaseTrainSpec releaseTrainSpec =
 				SpringReleaseTrainSpec.builder()
-						.nextTrain(LocalDate.of(2019, 12, 31))
+						.nextTrain(startDate)
 						.version("1.0.0")
 						.weekOfMonth(2)
 						.dayOfWeek(2)
 						.build();
-
-		assertThat(releaseTrainSpec.getTrain()).isEqualTo(Train.ONE);
-		assertThat(releaseTrainSpec.getYear()).isEqualTo(Year.of(2020));
-	}
-
-	@Test
-	public void nextTrainWhenMiddleOf2020ThenReturnsTrainTwoOf2020() {
-		SpringReleaseTrainSpec releaseTrainSpec =
-				SpringReleaseTrainSpec.builder()
-						.nextTrain(LocalDate.of(2020, 6, 30))
-						.version("1.0.0")
-						.weekOfMonth(2)
-						.dayOfWeek(2)
-						.build();
-
-		assertThat(releaseTrainSpec.getTrain()).isEqualTo(Train.TWO);
-		assertThat(releaseTrainSpec.getYear()).isEqualTo(Year.of(2020));
+		assertThat(releaseTrainSpec.getTrain()).isEqualTo(expectedTrain);
+		assertThat(releaseTrainSpec.getYear()).isEqualTo(expectedYear);
 	}
 
 	@Test
@@ -211,5 +206,40 @@ public class SpringReleaseTrainTests {
 		for (int dayOfMonth = 1; dayOfMonth <= 31; dayOfMonth++) {
 			assertThat(releaseTrain.isTrainDate("1.0.0", LocalDate.of(2022, 5, dayOfMonth))).isEqualTo(dayOfMonth == 16);
 		}
+	}
+
+	@ParameterizedTest
+	@CsvSource({
+			"2022-01-01, 2022-02-21",
+			"2022-02-01, 2022-02-21",
+			"2022-02-21, 2022-04-18",
+			"2022-03-01, 2022-04-18",
+			"2022-04-01, 2022-04-18",
+			"2022-04-18, 2022-06-20",
+			"2022-05-01, 2022-06-20",
+			"2022-06-01, 2022-06-20",
+			"2022-06-20, 2022-08-15",
+			"2022-07-01, 2022-08-15",
+			"2022-08-01, 2022-08-15",
+			"2022-08-15, 2022-10-17",
+			"2022-09-01, 2022-10-17",
+			"2022-10-01, 2022-10-17",
+			"2022-10-17, 2022-12-19",
+			"2022-11-01, 2022-12-19",
+			"2022-12-01, 2022-12-19",
+			"2022-12-19, 2023-02-20"
+	})
+	public void getNextReleaseDateWhenBoundaryConditionsThenSuccess(LocalDate startDate, LocalDate expectedDate) {
+		SpringReleaseTrainSpec releaseTrainSpec =
+				SpringReleaseTrainSpec.builder()
+						.train(1)
+						.version("1.0.0")
+						.weekOfMonth(3)
+						.dayOfWeek(1)
+						.year(2022)
+						.build();
+
+		SpringReleaseTrain releaseTrain = new SpringReleaseTrain(releaseTrainSpec);
+		assertThat(releaseTrain.getNextReleaseDate(startDate)).isEqualTo(expectedDate);
 	}
 }

@@ -16,12 +16,10 @@
 
 package org.springframework.gradle.release;
 
-import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
 public class GetNextSnapshotVersionTask extends DefaultTask {
@@ -30,10 +28,6 @@ public class GetNextSnapshotVersionTask extends DefaultTask {
 	@TaskAction
 	public void getNextSnapshotVersion() {
 		String currentVersion = getProject().getVersion().toString();
-		File gradlePropertiesFile = getProject().getRootProject().file(Project.GRADLE_PROPERTIES);
-		if (!gradlePropertiesFile.exists()) {
-			return;
-		}
 		String nextVersion = calculateNextSnapshotVersion(currentVersion);
 		System.out.println(nextVersion);
 	}

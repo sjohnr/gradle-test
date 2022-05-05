@@ -47,6 +47,11 @@ public final class SpringReleaseTrain {
 		this.releaseTrainSpec = releaseTrainSpec;
 	}
 
+	/**
+	 * Calculate release train dates based on the release train specification.
+	 *
+	 * @return A mapping of release milestones to scheduled release dates
+	 */
 	public Map<String, LocalDate> getTrainDates() {
 		Map<String, LocalDate> releaseDates = new LinkedHashMap<>();
 		switch (this.releaseTrainSpec.getTrain()) {
@@ -69,12 +74,45 @@ public final class SpringReleaseTrain {
 		return releaseDates;
 	}
 
+	/**
+	 * Determine if a given date matches the due date of given version.
+	 *
+	 * @param version The version number (e.g. 5.6.0-M1, 5.6.0, etc.)
+	 * @param expectedDate The expected date
+	 * @return true if the given date matches the due date of the given version, false otherwise
+	 */
 	public boolean isTrainDate(String version, LocalDate expectedDate) {
 		return expectedDate.isEqual(getTrainDates().get(version));
 	}
 
+	/**
+	 * Calculate the next release date following the given date.
+	 * <p>
+	 * The next release date is always on an even month so that a patch release
+	 * is the month after the GA version of a release train. This method does
+	 * not consider the year of the release train, only the given start date.
+	 *
+	 * @param startDate The start date
+	 * @return The next release date following the given date
+	 */
+	public LocalDate getNextReleaseDate(LocalDate startDate) {
+		LocalDate trainDate;
+		LocalDate currentDate = startDate;
+		do {
+			trainDate = calculateReleaseDate(
+					Year.of(currentDate.getYear()),
+					currentDate.getMonth(),
+					this.releaseTrainSpec.getDayOfWeek().getDayOfWeek(),
+					this.releaseTrainSpec.getWeekOfMonth().getDayOffset()
+			);
+			currentDate = currentDate.plusMonths(1);
+		} while (!trainDate.isAfter(startDate) || trainDate.getMonthValue() % 2 != 0);
+
+		return trainDate;
+	}
+
 	private void addTrainDate(Map<String, LocalDate> releaseDates, String milestone, Month month) {
-		LocalDate releaseDate = calculateTrainDate(
+		LocalDate releaseDate = calculateReleaseDate(
 				this.releaseTrainSpec.getYear(),
 				month,
 				this.releaseTrainSpec.getDayOfWeek().getDayOfWeek(),
@@ -84,7 +122,7 @@ public final class SpringReleaseTrain {
 		releaseDates.put(this.releaseTrainSpec.getVersion() + suffix, releaseDate);
 	}
 
-	private LocalDate calculateTrainDate(Year year, Month month, DayOfWeek dayOfWeek, Integer dayOffset) {
+	private static LocalDate calculateReleaseDate(Year year, Month month, DayOfWeek dayOfWeek, Integer dayOffset) {
 		LocalDate firstDayOfMonth = year.atMonth(month).atDay(1);
 		int dayOfWeekOffset = dayOfWeek.getValue() - firstDayOfMonth.getDayOfWeek().getValue();
 		if (dayOfWeekOffset < 0) {
