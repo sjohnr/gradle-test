@@ -22,4 +22,4 @@ jobs:
           java-version: ${{ matrix.jdk }}
           distribution: 'temurin'
       - name: Run Test
-        run: ./gradlew check
+        run: ./gradlew printUserName
