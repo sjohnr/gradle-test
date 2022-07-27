@@ -17,9 +17,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - uses: spring-io/spring-gradle-build-action@v1
+      - name: Set up JDK ${{ matrix.jdk }}
+        uses: actions/setup-java@v2
         with:
           java-version: ${{ matrix.jdk }}
           distribution: 'temurin'
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+        env:
+          GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
       - name: Run Test
         run: ./gradlew printUserName -Puser.name=spring-builds+github
