@@ -17,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - uses: spring-io/spring-gradle-build-action@v1
+      - uses: sjohnr/spring-gradle-build-action@v1-beta
         with:
           java-version: ${{ matrix.jdk }}
           distribution: 'temurin'
