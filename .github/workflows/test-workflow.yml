@@ -17,9 +17,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - uses: sjohnr/spring-gradle-build-action@v1-beta
+      - uses: spring-io/spring-gradle-build-action@v1
         with:
           java-version: ${{ matrix.jdk }}
           distribution: 'temurin'
       - name: Run Test
-        run: ./gradlew printUserName
+        run: ./gradlew printUserName -Puser.name=spring-builds+github
