@@ -12,12 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - shell: bash
-        run: |
-          mkdir -p /home/runner/.gradle
-          echo 'systemProp.user.name=spring-builds+github' >> /home/runner/.gradle/gradle.properties
-      - uses: gradle/gradle-build-action@v2
-        env:
-          GRADLE_USER_HOME: /home/runner/.gradle
+      - uses: spring-io/spring-gradle-build-action@v1
       - name: Run Test
         run: ./gradlew check
