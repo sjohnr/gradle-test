@@ -9,9 +9,17 @@ on:
 jobs:
   test:
     name: Test Job
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        jdk: ['17']
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - uses: spring-io/spring-gradle-build-action@v1
+        with:
+          java-version: ${{ matrix.jdk }}
+          distribution: 'temurin'
       - name: Run Test
-        run: ./gradlew check
+        run: pwd
