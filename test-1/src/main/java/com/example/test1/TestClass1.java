@@ -46,6 +46,7 @@ public class TestClass1 {
 	 * @param param This is a parameter
 	 */
 	public void method2(String param) {
+		System.out.println("Hello, world");
 	}
 
 }
