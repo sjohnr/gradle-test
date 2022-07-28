@@ -28,5 +28,5 @@ jobs:
           GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
       - name: Run Test
         run: |
-          export GRADLE_USER_NAME_PROPERTY="-Puser.name=spring-builds+github"
-          ./gradlew printUserName $GRADLE_USER_NAME_PROPERTY
+          GRADLE_USER_NAME="spring-builds+github"
+          ./gradlew printUserName -Puser.name=$GRADLE_USER_NAME
