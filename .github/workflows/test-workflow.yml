@@ -27,4 +27,4 @@ jobs:
         env:
           GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
       - name: Run Test
-        run: ./gradlew printUserName -P user.name=spring-builds+github
+        run: ./gradlew -Puser.name=spring-builds+github printUserName
