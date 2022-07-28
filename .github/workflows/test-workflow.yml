@@ -26,5 +26,5 @@ jobs:
         uses: gradle/gradle-build-action@v2
       - name: Run Test
         env:
-          USER_NAME: 'spring-builds+github'
+          user.name: 'spring-builds+github'
         run: ./gradlew printUserName
