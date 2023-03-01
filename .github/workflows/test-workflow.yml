@@ -24,7 +24,7 @@ jobs:
           distribution: 'temurin'
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
+      - name: Set up gradle user name
+        run: echo 'systemProp.user.name=spring-builds+github' >> gradle.properties
       - name: Run Test
-        env:
-          user.name: 'spring-builds+github'
         run: ./gradlew printUserName
