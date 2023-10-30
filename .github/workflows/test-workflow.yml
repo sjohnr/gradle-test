@@ -17,14 +17,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK ${{ matrix.jdk }}
-        uses: actions/setup-java@v2
-        with:
-          java-version: ${{ matrix.jdk }}
-          distribution: 'temurin'
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
-      - name: Set up gradle user name
-        run: echo 'systemProp.user.name=spring-builds+github' >> gradle.properties
+      - uses: spring-io/spring-gradle-build-action@v2.0.1
       - name: Run Test
         run: ./gradlew printUserName
