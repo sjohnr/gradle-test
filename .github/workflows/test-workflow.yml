@@ -18,5 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: spring-io/spring-gradle-build-action@v2.0.1
+        with:
+          java-version: ${{ matrix.jdk }}
+          distribution: 'temurin'
       - name: Run Test
         run: ./gradlew printUserName
